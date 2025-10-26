@@ -49,20 +49,21 @@ const EdgeType = {
 } as const satisfies Partial<Record<EdgeTypeKey, EdgeTypeParams>>;
 
 const Nodes = {
-  N5: NodeType.FILE_UPLOAD,
-  N1: NodeType.CONTEXT,
-  N8: NodeType.QUESTION,
-  N9: NodeType.LLM,
-  N4: NodeType.DATA_FRAME,
-  N6: NodeType.LLM,
-  N7: NodeType.VISUALIZER,
+  N5: { type: NodeType.FILE_UPLOAD },
+  N1: { type: NodeType.CONTEXT },
+  N8: { type: NodeType.QUESTION },
+  N9: { type: NodeType.LLM },
+  N4: { type: NodeType.DATA_FRAME },
+  N6: { type: NodeType.LLM },
+  N7: { type: NodeType.VISUALIZER },
 } as const;
 
 const Edges = {
-  E1: { type: EdgeType.FILE_UPLOAD_TO_DATA_FRAME, from: Nodes.N5, to: Nodes.N4 },
-  E2: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8, to: Nodes.N9 },
-  E3: { type: EdgeType.LLM_TO_VISUALIZER, from: Nodes.N6, to: Nodes.N7 },
-  E4: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N9 },
-  // This will error at compile time:
-  E5: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N8 }, // ❌ Error: N8 is QUESTION, not LLM
+  E1: { type: EdgeType.FILE_UPLOAD_TO_DATA_FRAME, from: Nodes.N5.type, to: Nodes.N4.type },
+  E2: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1.type, to: Nodes.N9.type },
+  E3: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8.type, to: Nodes.N7.type },
+  E4: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8.type, to: Nodes.N6.type },
+  E5: { type: EdgeType.LLM_TO_DATA_FRAME, from: Nodes.N9.type, to: Nodes.N4.type },
+  E6: { type: EdgeType.DATA_FRAME_TO_LLM, from: Nodes.N4.type, to: Nodes.N6.type },
+  E7: { type: EdgeType.LLM_TO_VISUALIZER, from: Nodes.N6.type, to: Nodes.N7.type },
 } as const satisfies Record<string, EdgeDefinition<keyof typeof EdgeType>>;
