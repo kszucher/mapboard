@@ -48,7 +48,7 @@ const EdgeType = {
   VISUALIZER_TO_LLM: { from: NodeType.VISUALIZER, to: NodeType.LLM },
 } as const satisfies Partial<Record<EdgeTypeKey, EdgeTypeParams>>;
 
-const Nodes = {
+const nodes = {
   N5: { type: NodeType.FILE_UPLOAD },
   N1: { type: NodeType.CONTEXT },
   N8: { type: NodeType.QUESTION },
@@ -58,12 +58,15 @@ const Nodes = {
   N7: { type: NodeType.VISUALIZER },
 } as const;
 
-const Edges = {
-  E1: { type: EdgeType.FILE_UPLOAD_TO_DATA_FRAME, from: Nodes.N5.type, to: Nodes.N4.type },
-  E2: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1.type, to: Nodes.N9.type },
-  E3: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8.type, to: Nodes.N7.type },
-  E4: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8.type, to: Nodes.N6.type },
-  E5: { type: EdgeType.LLM_TO_DATA_FRAME, from: Nodes.N9.type, to: Nodes.N4.type },
-  E6: { type: EdgeType.DATA_FRAME_TO_LLM, from: Nodes.N4.type, to: Nodes.N6.type },
-  E7: { type: EdgeType.LLM_TO_VISUALIZER, from: Nodes.N6.type, to: Nodes.N7.type },
+const edges = {
+  E1: { type: EdgeType.FILE_UPLOAD_TO_DATA_FRAME, from: nodes.N5.type, to: nodes.N4.type },
+  E2: { type: EdgeType.CONTEXT_TO_LLM, from: nodes.N1.type, to: nodes.N9.type },
+  E3: { type: EdgeType.QUESTION_TO_LLM, from: nodes.N8.type, to: nodes.N7.type },
+  E4: { type: EdgeType.QUESTION_TO_LLM, from: nodes.N8.type, to: nodes.N6.type },
+  E5: { type: EdgeType.LLM_TO_DATA_FRAME, from: nodes.N9.type, to: nodes.N4.type },
+  E6: { type: EdgeType.DATA_FRAME_TO_LLM, from: nodes.N4.type, to: nodes.N6.type },
+  E7: { type: EdgeType.LLM_TO_VISUALIZER, from: nodes.N6.type, to: nodes.N7.type },
 } as const satisfies Record<string, EdgeDefinition<keyof typeof EdgeType>>;
+
+for (const node of Object.values(nodes)) {
+}
