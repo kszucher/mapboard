@@ -65,4 +65,4 @@ const Edges = {
   E4: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N9 },
   // This will error at compile time:
   E5: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N8 }, // ❌ Error: N8 is QUESTION, not LLM
-} satisfies Record<string, EdgeDefinition<keyof typeof EdgeType>>;
+} as const satisfies Record<string, EdgeDefinition<keyof typeof EdgeType>>;
