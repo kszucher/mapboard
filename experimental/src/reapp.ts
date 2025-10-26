@@ -15,6 +15,12 @@ type EdgeTypeParams = {
   to: (typeof NodeType)[NodeTypeKey];
 };
 
+type EdgeDefinition<T extends keyof typeof EdgeType> = {
+  type: (typeof EdgeType)[T];
+  from: (typeof EdgeType)[T]['from'];
+  to: (typeof EdgeType)[T]['to'];
+};
+
 const NodeType = {
   CONTEXT: { w: 280, h: 240, color: Color.violet, label: 'Context' },
   DATA_FRAME: { w: 240, h: 240, color: Color.lime, label: 'Data Frame' },
@@ -51,15 +57,11 @@ const Nodes = {
   N7: NodeType.VISUALIZER,
 } as const;
 
-function edge<ET extends (typeof EdgeType)[keyof typeof EdgeType]>(type: ET, from: ET['from'], to: ET['to']) {
-  return { type, from, to };
-}
-
 const Edges = {
-  E1: edge(EdgeType.FILE_UPLOAD_TO_DATA_FRAME, Nodes.N5, Nodes.N4),
-  E2: edge(EdgeType.QUESTION_TO_LLM, Nodes.N8, Nodes.N9),
-  E3: edge(EdgeType.LLM_TO_VISUALIZER, Nodes.N6, Nodes.N7),
-  E4: edge(EdgeType.CONTEXT_TO_LLM, Nodes.N1, Nodes.N9),
+  E1: { type: EdgeType.FILE_UPLOAD_TO_DATA_FRAME, from: Nodes.N5, to: Nodes.N4 },
+  E2: { type: EdgeType.QUESTION_TO_LLM, from: Nodes.N8, to: Nodes.N9 },
+  E3: { type: EdgeType.LLM_TO_VISUALIZER, from: Nodes.N6, to: Nodes.N7 },
+  E4: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N9 },
   // This will error at compile time:
-  E5: edge(EdgeType.CONTEXT_TO_LLM, Nodes.N1, Nodes.N8), // ❌ Error: N8 is QUESTION, not LLM
-};
+  E5: { type: EdgeType.CONTEXT_TO_LLM, from: Nodes.N1, to: Nodes.N8 }, // ❌ Error: N8 is QUESTION, not LLM
+} satisfies Record<string, EdgeDefinition<keyof typeof EdgeType>>;
