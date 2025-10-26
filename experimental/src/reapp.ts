@@ -1,6 +1,7 @@
 import { Color } from '../../shared/src/schema/schema';
 
 type NodeTypeKey = keyof typeof NodeType;
+
 type EdgeTypeKey = `${NodeTypeKey}_TO_${NodeTypeKey}`;
 
 type NodeTypeParams = {
