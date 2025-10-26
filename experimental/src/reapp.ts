@@ -1,24 +1,21 @@
-import { createWorkflow, createStep } from '@mastra/core/workflows';
-import { z } from 'zod';
 import { Color } from '../../shared/src/schema/schema';
 
-type NodeKey = keyof typeof Node;
+type NodeTypeKey = keyof typeof NodeType;
+type EdgeTypeKey = `${NodeTypeKey}_TO_${NodeTypeKey}`;
 
-type EdgeKey = `${NodeKey}_TO_${NodeKey}`;
-
-type NodeType = {
+type NodeTypeParams = {
   w: number;
   h: number;
   color: Color;
   label: string;
 };
 
-type EdgeType = {
-  from: (typeof Node)[NodeKey];
-  to: (typeof Node)[NodeKey];
+type EdgeTypeParams = {
+  from: (typeof NodeType)[NodeTypeKey];
+  to: (typeof NodeType)[NodeTypeKey];
 };
 
-const Node = {
+const NodeType = {
   CONTEXT: { w: 280, h: 240, color: Color.violet, label: 'Context' },
   DATA_FRAME: { w: 240, h: 240, color: Color.lime, label: 'Data Frame' },
   FILE_UPLOAD: { w: 280, h: 280, color: Color.jade, label: 'File Upload' },
@@ -27,76 +24,42 @@ const Node = {
   QUESTION: { w: 240, h: 160, color: Color.crimson, label: 'Question' },
   VECTOR_DATABASE: { w: 240, h: 100, color: Color.cyan, label: 'Vector Database' },
   VISUALIZER: { w: 240, h: 180, color: Color.yellow, label: 'Visualizer' },
-} satisfies Record<string, NodeType>;
+} as const satisfies Record<Uppercase<string>, NodeTypeParams>;
 
-const Edge = {
-  CONTEXT_TO_LLM: { from: Node.CONTEXT, to: Node.LLM },
-  DATA_FRAME_TO_LLM: { from: Node.DATA_FRAME, to: Node.LLM },
-  FILE_UPLOAD_TO_DATA_FRAME: { from: Node.FILE_UPLOAD, to: Node.DATA_FRAME },
-  FILE_UPLOAD_TO_INGESTION: { from: Node.FILE_UPLOAD, to: Node.INGESTION },
-  INGESTION_TO_VECTOR_DATABASE: { from: Node.INGESTION, to: Node.VECTOR_DATABASE },
-  LLM_TO_DATA_FRAME: { from: Node.LLM, to: Node.DATA_FRAME },
-  LLM_TO_VISUALIZER: { from: Node.LLM, to: Node.VISUALIZER },
-  LLM_TO_VECTOR_DATABASE: { from: Node.LLM, to: Node.VECTOR_DATABASE },
-  LLM_TO_LLM: { from: Node.LLM, to: Node.LLM },
-  QUESTION_TO_LLM: { from: Node.QUESTION, to: Node.LLM },
-  VECTOR_DATABASE_TO_LLM: { from: Node.VECTOR_DATABASE, to: Node.LLM },
-  VISUALIZER_TO_LLM: { from: Node.VISUALIZER, to: Node.LLM },
-} satisfies Partial<Record<EdgeKey, EdgeType>>;
+const EdgeType = {
+  CONTEXT_TO_LLM: { from: NodeType.CONTEXT, to: NodeType.LLM },
+  DATA_FRAME_TO_LLM: { from: NodeType.DATA_FRAME, to: NodeType.LLM },
+  FILE_UPLOAD_TO_DATA_FRAME: { from: NodeType.FILE_UPLOAD, to: NodeType.DATA_FRAME },
+  FILE_UPLOAD_TO_INGESTION: { from: NodeType.FILE_UPLOAD, to: NodeType.INGESTION },
+  INGESTION_TO_VECTOR_DATABASE: { from: NodeType.INGESTION, to: NodeType.VECTOR_DATABASE },
+  LLM_TO_DATA_FRAME: { from: NodeType.LLM, to: NodeType.DATA_FRAME },
+  LLM_TO_VISUALIZER: { from: NodeType.LLM, to: NodeType.VISUALIZER },
+  LLM_TO_VECTOR_DATABASE: { from: NodeType.LLM, to: NodeType.VECTOR_DATABASE },
+  LLM_TO_LLM: { from: NodeType.LLM, to: NodeType.LLM },
+  QUESTION_TO_LLM: { from: NodeType.QUESTION, to: NodeType.LLM },
+  VECTOR_DATABASE_TO_LLM: { from: NodeType.VECTOR_DATABASE, to: NodeType.LLM },
+  VISUALIZER_TO_LLM: { from: NodeType.VISUALIZER, to: NodeType.LLM },
+} as const satisfies Partial<Record<EdgeTypeKey, EdgeTypeParams>>;
 
-const graph = {
-  Nodes: {
-    N5: Node.CONTEXT,
-  },
-  Edges: {},
+const Nodes = {
+  N5: NodeType.FILE_UPLOAD,
+  N1: NodeType.CONTEXT,
+  N8: NodeType.QUESTION,
+  N9: NodeType.LLM,
+  N4: NodeType.DATA_FRAME,
+  N6: NodeType.LLM,
+  N7: NodeType.VISUALIZER,
+} as const;
+
+function edge<ET extends (typeof EdgeType)[keyof typeof EdgeType]>(type: ET, from: ET['from'], to: ET['to']) {
+  return { type, from, to };
+}
+
+const Edges = {
+  E1: edge(EdgeType.FILE_UPLOAD_TO_DATA_FRAME, Nodes.N5, Nodes.N4),
+  E2: edge(EdgeType.QUESTION_TO_LLM, Nodes.N8, Nodes.N9),
+  E3: edge(EdgeType.LLM_TO_VISUALIZER, Nodes.N6, Nodes.N7),
+  E4: edge(EdgeType.CONTEXT_TO_LLM, Nodes.N1, Nodes.N9),
+  // This will error at compile time:
+  E5: edge(EdgeType.CONTEXT_TO_LLM, Nodes.N1, Nodes.N8), // ❌ Error: N8 is QUESTION, not LLM
 };
-
-// TODO: actually create node types and edge types, and GET their id-s, so there will be a mapping in between
-// the generated flow and the actual UI stuff
-
-const steps = [];
-
-// TODO apply topological sort from a library...
-
-// for (const nodeId of topologicalSort) {
-//   const ni = nodesForSorting.find(ni => ni.id === nodeId)!;
-//
-//   steps.push(
-//     createStep({
-//       id: ni.NodeType.label,
-//       inputSchema: z.object({}),
-//       outputSchema: z.object({ result: z.string() }),
-//       execute: async () => {
-//         switch (ni.NodeType.label) {
-//           case 'Context': {
-//             break;
-//           }
-//           case 'Data Frame': {
-//             break;
-//           }
-//           case 'File Upload': {
-//             break;
-//           }
-//           case 'Ingestion': {
-//             break;
-//           }
-//           case 'LLM': {
-//             break;
-//           }
-//           case 'Question': {
-//             break;
-//           }
-//           case 'Vector Database': {
-//             break;
-//           }
-//           case 'Visualizer': {
-//             break;
-//           }
-//         }
-//
-//         console.log('Running step 1...');
-//         return { result: 'Step 1 complete' };
-//       },
-//     })
-//   );
-// }
