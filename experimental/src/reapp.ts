@@ -1,6 +1,5 @@
 import { createStep } from '@mastra/core/workflows';
 import { z } from 'zod';
-
 import { Color } from '../../shared/src/schema/schema';
 
 type NodeTypeParams = {
@@ -108,7 +107,7 @@ const edges = {
 
 type Edge = (typeof nodes)[keyof typeof nodes];
 
-// TODO topological sort
+// TODO use graphology/graphology-dag for topological sort and graph traversal (in nodes, out nodes, etc.)
 
 const steps = [];
 
