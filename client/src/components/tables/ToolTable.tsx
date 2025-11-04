@@ -2,9 +2,8 @@ import { Badge, Button, Select, Table } from '@radix-ui/themes';
 import { useState } from 'react';
 import { Color, NodeType } from '../../../../shared/src/schema/schema.ts';
 import { useGetNodeTypeInfoQuery } from '../../data/api.ts';
-import { AttributeType } from '../popovers/AttributeType.tsx';
 
-export const NodeTable = () => {
+export const ToolTable = () => {
   const nodeTypes = useGetNodeTypeInfoQuery().data || [];
   const emptyNodeType: Partial<NodeType> = { label: '', color: Color.gray, w: 0, h: 0 };
   const [newNodeType, setNewNodeType] = useState(emptyNodeType);
@@ -21,7 +20,6 @@ export const NodeTable = () => {
           <Table.ColumnHeaderCell>{'Color'}</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>{'Width'}</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>{'Height'}</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>{'Attributes'}</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>{'Action'}</Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
@@ -38,9 +36,6 @@ export const NodeTable = () => {
               </Table.Cell>
               <Table.Cell>{el.w}</Table.Cell>
               <Table.Cell>{el.h}</Table.Cell>
-              <Table.Cell>
-                <AttributeType nodeType={el} />
-              </Table.Cell>
               <Table.Cell>
                 <Button size="1" variant="solid" onClick={() => {}}>
                   {'Remove'}
@@ -68,7 +63,6 @@ export const NodeTable = () => {
           </Table.Cell>
           <Table.Cell>{newNodeType.w}</Table.Cell>
           <Table.Cell>{newNodeType.h}</Table.Cell>
-          <Table.Cell>TBD</Table.Cell>
           <Table.Cell>
             <Button size="1" variant="solid" color="gray" onClick={() => {}}>
               {'Add'}

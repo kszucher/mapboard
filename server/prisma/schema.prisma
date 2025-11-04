@@ -39,55 +39,29 @@ model Map {
 }
 
 model Node {
-  id           Int         @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   mapId        Int
-  Map          Map         @relation(fields: [mapId], references: [id])
+  Map          Map      @relation(fields: [mapId], references: [id])
   nodeTypeId   Int
-  NodeType     NodeType    @relation(fields: [nodeTypeId], references: [id])
+  NodeType     NodeType @relation(fields: [nodeTypeId], references: [id])
   workspaceId  Int?
   iid          Int
   offsetX      Int
   offsetY      Int
-  isProcessing Boolean     @default(false)
-  FromEdges    Edge[]      @relation("FromEdges")
-  ToEdges      Edge[]      @relation("ToEdges")
-  Attributes   Attribute[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @default(now()) @updatedAt
+  isProcessing Boolean  @default(false)
+  FromEdges    Edge[]   @relation("FromEdges")
+  ToEdges      Edge[]   @relation("ToEdges")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model NodeType {
-  id             Int             @id @default(autoincrement())
-  w              Int
-  h              Int
-  color          Color
-  label          String
-  AttributeTypes AttributeType[]
-  Node           Node[]
-}
-
-model Attribute {
-  id              Int           @id @default(autoincrement())
-  nodeId          Int
-  Node            Node          @relation(fields: [nodeId], references: [id])
-  attributeTypeId Int
-  AttributeType   AttributeType @relation(fields: [attributeTypeId], references: [id])
-  value           String?
-}
-
-model AttributeType {
-  id            Int         @id @default(autoincrement())
-  nodeTypeId    Int?
-  NodeType      NodeType?   @relation(fields: [nodeTypeId], references: [id])
-  label         String
-  isInput       Boolean     @default(true)
-  isString      Boolean     @default(false)
-  isNumber      Boolean     @default(false)
-  isEnum        Boolean     @default(false)
-  defaultString String?
-  defaultNumber Int?
-  defaultEnum   String[]
-  Attribute     Attribute[]
+  id    Int    @id @default(autoincrement())
+  w     Int
+  h     Int
+  color Color
+  label String
+  Node  Node[]
 }
 
 model Edge {

@@ -22,29 +22,6 @@ export type NodeType = {
   label: string;
 }
 
-export type Attribute = {
-  id: number;
-  value: string | null;
-}
-
-export type AttributeCreate = Pick<Attribute,
-  'value'>
-
-export type AttributeType = {
-  id: number;
-  nodeTypeId: number | null;
-  label: string;
-  isInput: boolean;
-  isString: boolean;
-  isNumber: boolean;
-  isEnum: boolean;
-  defaultString: string | null;
-  defaultNumber: number | null;
-  defaultEnum: string[];
-}
-
-export type AttributeTypeUpdate = Required<Omit<AttributeType, 'id'>>
-
 export type Edge = {
   id: number;
   workspaceId: number | null;

@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, Flex, Tabs } from '@radix-ui/themes';
-import { NodeTable } from '../tables/NodeTable.tsx';
+import { ToolTable } from '../tables/ToolTable.tsx';
 
 export const MapConfig = () => {
   return (
@@ -17,7 +17,7 @@ export const MapConfig = () => {
       <Dialog.Description>{'Config tools'}</Dialog.Description>
       <Tabs.Root mt="4">
         <Box pt="3">
-          <NodeTable />
+          <ToolTable />
         </Box>
       </Tabs.Root>
       <Flex gap="3" mt="4" justify="end">

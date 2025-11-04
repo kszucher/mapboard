@@ -15,7 +15,7 @@ import GripVertical from '../../../assets/grip-vertical.svg?react';
 import { api, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
-import { NodeType } from './NodeType.tsx';
+import { NodeBody } from './NodeBody.tsx';
 
 export const Node: FC = () => {
   const nodeTypes = useGetNodeTypeInfoQuery().data || [];
@@ -159,7 +159,7 @@ export const Node: FC = () => {
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </Box>
-      <NodeType ni={ni} nodeId={ni.id} />
+      <NodeBody ni={ni} nodeId={ni.id} />
     </div>
   ));
 };

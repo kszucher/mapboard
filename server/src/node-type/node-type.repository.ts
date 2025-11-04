@@ -13,15 +13,6 @@ export class NodeTypeRepository {
         h: true,
         color: true,
         label: true,
-        AttributeTypes: {
-          select: {
-            id: true,
-            label: true,
-            defaultString: true,
-            defaultNumber: true,
-            defaultEnum: true,
-          },
-        },
       },
     });
   }
