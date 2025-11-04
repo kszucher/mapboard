@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { getNodeColor, getNodeLeft, getNodeTop } from '../../../../shared/src/map/map-getters.ts';
+import { useGetToolInfoQuery } from '../../data/api.ts';
 import { RootState } from '../../data/store.ts';
 import { radixColorMap } from './UtilsSvg.ts';
-import { useGetToolInfoQuery } from '../../data/api.ts';
 
 export const EdgeConnectorTo: FC = () => {
   const tools = useGetToolInfoQuery().data || [];
