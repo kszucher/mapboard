@@ -12,13 +12,13 @@ import {
 } from '../../../../shared/src/map/map-getters.ts';
 import Dots from '../../../assets/dots.svg?react';
 import GripVertical from '../../../assets/grip-vertical.svg?react';
-import { api, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
 import { NodeBody } from './NodeBody.tsx';
 
 export const Node: FC = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
   const mapId = useGetMapInfoQuery().data?.id!;
   const nodeOffsetCoords = useSelector((state: RootState) => state.slice.nodeOffsetCoords);
   const nodeOffsetCoordsRef = useRef(nodeOffsetCoords);
@@ -27,7 +27,7 @@ export const Node: FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  if (!nodeTypes) {
+  if (!tools) {
     return;
   }
 
@@ -42,8 +42,8 @@ export const Node: FC = () => {
         top: getNodeTop(ni),
         transition: 'left 0.3s, top 0.3s',
         transitionTimingFunction: 'cubic-bezier(0.0,0.0,0.58,1.0)',
-        minWidth: getNodeWidth(nodeTypes, ni),
-        minHeight: getNodeHeight(nodeTypes, ni),
+        minWidth: getNodeWidth(tools, ni),
+        minHeight: getNodeHeight(tools, ni),
         margin: 0,
         pointerEvents: 'none',
       }}
@@ -54,8 +54,8 @@ export const Node: FC = () => {
           <Badge color="gray" size="2">
             {'N' + ni.iid}
           </Badge>
-          <Badge color={getNodeColor(nodeTypes, ni)} size="2">
-            {getNodeLabel(nodeTypes, ni)}
+          <Badge color={getNodeColor(tools, ni)} size="2">
+            {getNodeLabel(tools, ni)}
           </Badge>
           {ni.isProcessing && <Spinner m="1" />}
         </Flex>
@@ -78,7 +78,7 @@ export const Node: FC = () => {
               e => {
                 e.preventDefault();
                 didMove = true;
-                dispatch(actions.moveNodePreviewUpdate({ nodeTypes, n: ni, e }));
+                dispatch(actions.moveNodePreviewUpdate({ tools, n: ni, e }));
               },
               { signal }
             );
@@ -144,7 +144,7 @@ export const Node: FC = () => {
                         );
                       }}
                     >
-                      {getNodeLabel(nodeTypes, toNi) + ' N' + toNi.iid}
+                      {getNodeLabel(tools, toNi) + ' N' + toNi.iid}
                     </DropdownMenu.Item>
                   ))}
               </DropdownMenu.SubContent>

@@ -10,11 +10,11 @@ export type Node = {
   offsetX: number;
   offsetY: number;
   isProcessing: boolean;
-  nodeTypeId: number;
+  toolId: number;
   updatedAt: Date;
 };
 
-export type NodeType = {
+export type Tool = {
   id: number;
   w: number;
   h: number;
@@ -33,7 +33,7 @@ export type Edge = {
     id: number;
     offsetX: number;
     offsetY: number;
-    NodeType: {
+    Tool: {
       id: number;
     }
   },
@@ -41,7 +41,7 @@ export type Edge = {
     id: number;
     offsetX: number;
     offsetY: number;
-    NodeType: {
+    Tool: {
       id: number;
     }
   }

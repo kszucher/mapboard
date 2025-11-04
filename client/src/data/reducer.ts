@@ -7,7 +7,7 @@ import {
 } from '../../../shared/src/api/api-types-distribution.ts';
 import { getNodeHeight, getNodeWidth } from '../../../shared/src/map/map-getters.ts';
 import { alignNodes } from '../../../shared/src/map/map-setters.ts';
-import { Edge, Node, NodeType } from '../../../shared/src/schema/schema.ts';
+import { Edge, Node, Tool } from '../../../shared/src/schema/schema.ts';
 import { getMapX, getMapY } from '../components/map/UtilsDiv.ts';
 import { api } from './api.ts';
 import { state, stateDefault } from './state-defaults.ts';
@@ -85,12 +85,12 @@ export const slice = createSlice({
       state.zoomInfo.fromX = originX + (getMapX(e) - prevMapX) / scale;
       state.zoomInfo.fromY = originY + (getMapY(e) - prevMapY) / scale;
     },
-    moveNodePreviewUpdate(state, action: PayloadAction<{ nodeTypes: Partial<NodeType>[]; n: Node; e: MouseEvent }>) {
-      const { nodeTypes, n, e } = action.payload;
+    moveNodePreviewUpdate(state, action: PayloadAction<{ tools: Partial<Tool>[]; n: Node; e: MouseEvent }>) {
+      const { tools, n, e } = action.payload;
       const { fromX, fromY, scale, prevMapX, prevMapY, originX, originY } = state.zoomInfo;
       const toX = originX + (getMapX(e) - prevMapX) / scale - fromX + n.offsetX;
       const toY = originY + (getMapY(e) - prevMapY) / scale - fromY + n.offsetY;
-      state.nodeOffsetCoords = [toX, toY, getNodeWidth(nodeTypes, n), getNodeHeight(nodeTypes, n)];
+      state.nodeOffsetCoords = [toX, toY, getNodeWidth(tools, n), getNodeHeight(tools, n)];
     },
     moveNodePreviewEnd(state) {
       state.nodeOffsetCoords = [];

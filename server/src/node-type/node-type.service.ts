@@ -1,19 +1,19 @@
 import { injectable } from 'tsyringe';
-import { NodeTypeRepository } from './node-type.repository';
+import { ToolRepository } from './node-type.repository';
 
 @injectable()
-export class NodeTypeService {
-  constructor(private nodeTypeRepository: NodeTypeRepository) {}
+export class ToolService {
+  constructor(private toolRepository: ToolRepository) {}
 
-  async getNodeType() {
-    return this.nodeTypeRepository.getNodeType();
+  async getTool() {
+    return this.toolRepository.getTool();
   }
 
-  async createNodeType() {
-    return this.nodeTypeRepository.createNodeType();
+  async createTool() {
+    return this.toolRepository.createTool();
   }
 
-  async removeNodeType() {
-    return this.nodeTypeRepository.removeNodeType();
+  async removeTool() {
+    return this.toolRepository.removeTool();
   }
 }

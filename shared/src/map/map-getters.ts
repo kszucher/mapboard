@@ -1,29 +1,29 @@
 import { M_PADDING, N_PADDING } from '../consts/consts';
-import { Color, Edge, Node, NodeType, M } from '../schema/schema';
+import { Color, Edge, Node, Tool, M } from '../schema/schema';
 
-export const getNodeType = (nodeTypes: Partial<NodeType>[], n: Node) => nodeTypes.find(nt => nt.id === n.nodeTypeId);
+export const getTool = (tools: Partial<Tool>[], n: Node) => tools.find(nt => nt.id === n.toolId);
 
-export const getNodeLabel = (nodeTypes: Partial<NodeType>[], n: Node) => getNodeType(nodeTypes, n)?.label || '';
+export const getNodeLabel = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.label || '';
 
-export const getNodeColor = (nodeTypes: Partial<NodeType>[], n: Node) => getNodeType(nodeTypes, n)?.color || Color.gray;
+export const getNodeColor = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.color || Color.gray;
 
 export const getNodeLeft = (n: Node) => n.offsetX + M_PADDING;
 
 export const getNodeTop = (n: Node) => n.offsetY + M_PADDING;
 
-export const getNodeWidth = (nodeTypes: Partial<NodeType>[], n: Node) => getNodeType(nodeTypes, n)?.w || 0;
+export const getNodeWidth = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.w || 0;
 
-export const getNodeHeight = (nodeTypes: Partial<NodeType>[], n: Node) => getNodeType(nodeTypes, n)?.h || 0;
+export const getNodeHeight = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.h || 0;
 
-export const getNodeRight = (nodeTypes: Partial<NodeType>[], n: Node) => n.offsetX + getNodeWidth(nodeTypes, n) + N_PADDING;
+export const getNodeRight = (tools: Partial<Tool>[], n: Node) => n.offsetX + getNodeWidth(tools, n) + N_PADDING;
 
-export const getMapWidth = (nodeTypes: Partial<NodeType>[], m: M) => {
-  const max = Math.max(...m.n.map(ni => ni.offsetX + getNodeWidth(nodeTypes, ni) + N_PADDING));
+export const getMapWidth = (tools: Partial<Tool>[], m: M) => {
+  const max = Math.max(...m.n.map(ni => ni.offsetX + getNodeWidth(tools, ni) + N_PADDING));
   return Number.isFinite(max) ? max + 2 * M_PADDING : 0;
 };
 
-export const getMapHeight = (nodeTypes: Partial<NodeType>[], m: M) => {
-  const max = Math.max(...m.n.map(ni => ni.offsetY + getNodeHeight(nodeTypes, ni) + N_PADDING));
+export const getMapHeight = (tools: Partial<Tool>[], m: M) => {
+  const max = Math.max(...m.n.map(ni => ni.offsetY + getNodeHeight(tools, ni) + N_PADDING));
   return Number.isFinite(max) ? max + 2 * M_PADDING : 0;
 };
 
@@ -34,12 +34,12 @@ export const getInputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id 
 
 export const getOutputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id === e.toNodeId)!;
 
-export const getLineCoords = (nodeTypes: Partial<NodeType>[], m: M, e: Edge) => {
+export const getLineCoords = (tools: Partial<Tool>[], m: M, e: Edge) => {
   const fromNode = getInputNodeOfEdge(m, e);
   const toNode = getOutputNodeOfEdge(m, e);
 
   return [
-    getNodeRight(nodeTypes, fromNode),
+    getNodeRight(tools, fromNode),
     getNodeTop(fromNode) + 60,
     getNodeLeft(toNode),
     getNodeTop(toNode) + 60,

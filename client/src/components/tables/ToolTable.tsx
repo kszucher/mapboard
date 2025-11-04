@@ -1,14 +1,14 @@
 import { Badge, Button, Select, Table } from '@radix-ui/themes';
 import { useState } from 'react';
-import { Color, NodeType } from '../../../../shared/src/schema/schema.ts';
-import { useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { Color, Tool } from '../../../../shared/src/schema/schema.ts';
+import { useGetToolInfoQuery } from '../../data/api.ts';
 
 export const ToolTable = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
-  const emptyNodeType: Partial<NodeType> = { label: '', color: Color.gray, w: 0, h: 0 };
-  const [newNodeType, setNewNodeType] = useState(emptyNodeType);
+  const tools = useGetToolInfoQuery().data || [];
+  const emptyTool: Partial<Tool> = { label: '', color: Color.gray, w: 0, h: 0 };
+  const [newTool, setNewTool] = useState(emptyTool);
 
-  if (!nodeTypes.length) {
+  if (!tools.length) {
     return null;
   }
 
@@ -24,7 +24,7 @@ export const ToolTable = () => {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {[...nodeTypes]
+        {[...tools]
           .sort((a, b) => a.label!.localeCompare(b.label!))
           .map(el => (
             <Table.Row key={el.id}>
@@ -44,14 +44,14 @@ export const ToolTable = () => {
             </Table.Row>
           ))}
         <Table.Row key={'add'}>
-          <Table.Cell>{newNodeType.label}</Table.Cell>
+          <Table.Cell>{newTool.label}</Table.Cell>
           <Table.Cell>
             <Select.Root
               size="1"
-              value={newNodeType.color}
-              onValueChange={(value: Color) => setNewNodeType({ ...newNodeType, color: value })}
+              value={newTool.color}
+              onValueChange={(value: Color) => setNewTool({ ...newTool, color: value })}
             >
-              <Select.Trigger variant="soft" color={newNodeType.color} />
+              <Select.Trigger variant="soft" color={newTool.color} />
               <Select.Content>
                 {Object.values(Color).map(color => (
                   <Select.Item key={color} value={color}>
@@ -61,8 +61,8 @@ export const ToolTable = () => {
               </Select.Content>
             </Select.Root>
           </Table.Cell>
-          <Table.Cell>{newNodeType.w}</Table.Cell>
-          <Table.Cell>{newNodeType.h}</Table.Cell>
+          <Table.Cell>{newTool.w}</Table.Cell>
+          <Table.Cell>{newTool.h}</Table.Cell>
           <Table.Cell>
             <Button size="1" variant="solid" color="gray" onClick={() => {}}>
               {'Add'}

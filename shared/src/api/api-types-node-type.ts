@@ -1,5 +1,5 @@
-import { NodeType } from '../schema/schema';
+import { Tool } from '../schema/schema';
 
-export type GetNodeTypeQueryResponseDto = NodeType[]
+export type GetToolQueryResponseDto = Tool[]
 
-export type CreateNodeTypeRequestDto = {}
+export type CreateToolRequestDto = {}

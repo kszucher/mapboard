@@ -2,11 +2,11 @@ import { injectable } from 'tsyringe';
 import { PrismaClient } from '../generated/client';
 
 @injectable()
-export class NodeTypeRepository {
+export class ToolRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async getNodeType() {
-    return this.prisma.nodeType.findMany({
+  async getTool() {
+    return this.prisma.tool.findMany({
       select: {
         id: true,
         w: true,
@@ -17,9 +17,9 @@ export class NodeTypeRepository {
     });
   }
 
-  async createNodeType() {
+  async createTool() {
     // TODO
   }
 
-  async removeNodeType() {}
+  async removeTool() {}
 }

@@ -25,7 +25,7 @@ export class NodeRepository {
     return this.prisma.node.findMany({
       where: { mapId },
       include: {
-        NodeType: {
+        Tool: {
           select: {
             id: true,
           },
@@ -37,7 +37,7 @@ export class NodeRepository {
   async getNodeMapConfig({ nodeId }: { nodeId: number }) {
     return this.prisma.node.findFirstOrThrow({
       where: { id: nodeId },
-      select: { nodeTypeId: true },
+      select: { toolId: true },
     });
   }
 
@@ -131,7 +131,7 @@ export class NodeRepository {
     });
   }
 
-  async createNode({ mapId, nodeTypeId }: { mapId: number; nodeTypeId: number }) {
+  async createNode({ mapId, toolId }: { mapId: number; toolId: number }) {
     const result = await this.prisma.node.aggregate({
       where: { mapId },
       _max: {
@@ -144,7 +144,7 @@ export class NodeRepository {
     return this.prisma.node.create({
       data: {
         mapId,
-        nodeTypeId,
+        toolId,
         iid: (result._max.iid || 0) + 1,
         offsetX: (result._max.offsetX || 0) + 200,
         offsetY: (result._max.offsetY || 0) + 200,

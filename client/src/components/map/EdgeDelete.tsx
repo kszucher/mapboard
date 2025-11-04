@@ -3,12 +3,12 @@ import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLineCoords } from '../../../../shared/src/map/map-getters.ts';
 import Trash from '../../../assets/trash.svg?react';
-import { api, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
 import { getBezierLineCoords, getBezierLineCoordsMid } from './UtilsSvg.ts';
 
 export const EdgeDelete: FC = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
   const mapId = useGetMapInfoQuery().data?.id!;
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
   const edgeHelpersVisible = useSelector((state: RootState) => state.slice.edgeHelpersVisible);
@@ -25,8 +25,8 @@ export const EdgeDelete: FC = () => {
         radius="medium"
         style={{
           position: 'absolute',
-          left: getBezierLineCoordsMid(getBezierLineCoords(getLineCoords(nodeTypes, m, ei))).x - 12,
-          top: getBezierLineCoordsMid(getBezierLineCoords(getLineCoords(nodeTypes, m, ei))).y - 12,
+          left: getBezierLineCoordsMid(getBezierLineCoords(getLineCoords(tools, m, ei))).x - 12,
+          top: getBezierLineCoordsMid(getBezierLineCoords(getLineCoords(tools, m, ei))).y - 12,
           transition: 'all 0.3s',
           transitionTimingFunction: 'cubic-bezier(0.0,0.0,0.58,1.0)',
         }}

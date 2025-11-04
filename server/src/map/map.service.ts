@@ -160,7 +160,7 @@ export class MapService {
       });
 
       try {
-        // switch (ni.NodeType.type) {
+        // switch (ni.Tool.type) {
         //   case 'FILE': {
         //     await new Promise(el => setTimeout(el, 2000));
         //     await this.executeFileService.execute({ mapId, nodeId });
@@ -208,7 +208,7 @@ export class MapService {
         //   }
         // }
       } catch (e) {
-        // console.error(ni.NodeType.type + 'error', e);
+        // console.error(ni.Tool.type + 'error', e);
 
         const nodes = await this.nodeRepository.clearProcessing({ workspaceId, mapId });
 

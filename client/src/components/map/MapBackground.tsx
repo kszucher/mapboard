@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import colors from 'tailwindcss/colors';
 import { getNodeHeight, getNodeLeft, getNodeTop, getNodeWidth } from '../../../../shared/src/map/map-getters.ts';
-import { useGetNodeTypeInfoQuery, useGetUserInfoQuery } from '../../data/api.ts';
+import { useGetToolInfoQuery, useGetUserInfoQuery } from '../../data/api.ts';
 import { RootState } from '../../data/store.ts';
 
 export const MapBackground: FC = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
   const colorMode = useGetUserInfoQuery().data?.userInfo.colorMode;
 
@@ -15,8 +15,8 @@ export const MapBackground: FC = () => {
       key={`${ni.id}_background`}
       x={getNodeLeft(ni) + 0.5}
       y={getNodeTop(ni) + 0.5}
-      width={getNodeWidth(nodeTypes, ni)}
-      height={getNodeHeight(nodeTypes, ni)}
+      width={getNodeWidth(tools, ni)}
+      height={getNodeHeight(tools, ni)}
       rx={16}
       ry={16}
       fill={colorMode === 'DARK' ? colors.zinc[800] : colors.zinc[50]}

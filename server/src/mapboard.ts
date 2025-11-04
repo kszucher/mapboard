@@ -12,9 +12,9 @@ import { PrismaClient } from './generated/client';
 import { MapController } from './map/map.controller';
 import { MapRepository } from './map/map.repository';
 import { MapService } from './map/map.service';
-import { NodeTypeController } from './node-type/node-type.controller';
-import { NodeTypeRepository } from './node-type/node-type.repository';
-import { NodeTypeService } from './node-type/node-type.service';
+import { ToolController } from './node-type/node-type.controller';
+import { ToolRepository } from './node-type/node-type.repository';
+import { ToolService } from './node-type/node-type.service';
 import { NodeController } from './node/node.controller';
 import { NodeRepository } from './node/node.repository';
 import { NodeService } from './node/node.service';
@@ -70,9 +70,9 @@ export class MapBoard {
     container.registerSingleton(NodeRepository);
     container.registerSingleton(NodeController);
 
-    container.registerSingleton(NodeTypeService);
-    container.registerSingleton(NodeTypeRepository);
-    container.registerSingleton(NodeTypeController);
+    container.registerSingleton(ToolService);
+    container.registerSingleton(ToolRepository);
+    container.registerSingleton(ToolController);
 
     container.registerSingleton(EdgeService);
     container.registerSingleton(EdgeRepository);
@@ -104,7 +104,7 @@ export class MapBoard {
     const userController = container.resolve(UserController);
     const mapController = container.resolve(MapController);
     const nodeController = container.resolve(NodeController);
-    const nodeTypeController = container.resolve(NodeTypeController);
+    const toolController = container.resolve(ToolController);
     const edgeController = container.resolve(EdgeController);
     const tabController = container.resolve(TabController);
     const shareController = container.resolve(ShareController);
@@ -117,7 +117,7 @@ export class MapBoard {
     this.app.use(userController.router);
     this.app.use(mapController.router);
     this.app.use(nodeController.router);
-    this.app.use(nodeTypeController.router);
+    this.app.use(toolController.router);
     this.app.use(edgeController.router);
     this.app.use(tabController.router);
     this.app.use(shareController.router);

@@ -42,8 +42,8 @@ model Node {
   id           Int      @id @default(autoincrement())
   mapId        Int
   Map          Map      @relation(fields: [mapId], references: [id])
-  nodeTypeId   Int
-  NodeType     NodeType @relation(fields: [nodeTypeId], references: [id])
+  toolId       Int
+  Tool         Tool     @relation(fields: [toolId], references: [id])
   workspaceId  Int?
   iid          Int
   offsetX      Int
@@ -55,7 +55,7 @@ model Node {
   updatedAt    DateTime @default(now()) @updatedAt
 }
 
-model NodeType {
+model Tool {
   id    Int    @id @default(autoincrement())
   w     Int
   h     Int

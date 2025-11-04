@@ -12,8 +12,8 @@ export class NodeService {
     private distributionService: DistributionService
   ) {}
 
-  async insertNode({ mapId, nodeTypeId }: { mapId: number; nodeTypeId: number }) {
-    const node = await this.nodeRepository.createNode({ mapId, nodeTypeId });
+  async insertNode({ mapId, toolId }: { mapId: number; toolId: number }) {
+    const node = await this.nodeRepository.createNode({ mapId, toolId });
 
     await this.distributionService.publish({
       type: SSE_EVENT_TYPE.INVALIDATE_MAP_GRAPH,

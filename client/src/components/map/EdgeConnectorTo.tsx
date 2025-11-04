@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 import { getNodeColor, getNodeLeft, getNodeTop } from '../../../../shared/src/map/map-getters.ts';
 import { RootState } from '../../data/store.ts';
 import { radixColorMap } from './UtilsSvg.ts';
-import { useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { useGetToolInfoQuery } from '../../data/api.ts';
 
 export const EdgeConnectorTo: FC = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
 
   return m.n.map(ni => {
     const isConnected = m.e.some(ei => ei.toNodeId === ni.id);
-    const color = radixColorMap[getNodeColor(nodeTypes, ni)];
+    const color = radixColorMap[getNodeColor(tools, ni)];
     return (
       <circle
         key={`${ni.id}_to`}

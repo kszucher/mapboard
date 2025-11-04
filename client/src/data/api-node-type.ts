@@ -1,14 +1,14 @@
 import { BaseQueryFn, EndpointBuilder } from '@reduxjs/toolkit/query';
-import { CreateNodeTypeRequestDto, GetNodeTypeQueryResponseDto } from '../../../shared/src/api/api-types-node-type.ts';
+import { CreateToolRequestDto, GetToolQueryResponseDto } from '../../../shared/src/api/api-types-node-type.ts';
 
-export const apiNodeType = (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
-  getNodeTypeInfo: builder.query<GetNodeTypeQueryResponseDto, void>({
+export const apiTool = (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
+  getToolInfo: builder.query<GetToolQueryResponseDto, void>({
     query: () => ({ url: 'get-node-type-info', method: 'POST', body: {} }),
-    providesTags: ['NodeTypeInfo'],
+    providesTags: ['ToolInfo'],
   }),
 
-  createNodeType: builder.mutation<void, CreateNodeTypeRequestDto>({
+  createTool: builder.mutation<void, CreateToolRequestDto>({
     query: params => ({ url: 'create-node-type', method: 'POST', body: params }),
-    invalidatesTags: ['NodeTypeInfo'],
+    invalidatesTags: ['ToolInfo'],
   }),
 });

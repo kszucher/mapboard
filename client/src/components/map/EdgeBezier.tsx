@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { getLineCoords, getOutputNodeOfEdge } from '../../../../shared/src/map/map-getters.ts';
-import { useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { useGetToolInfoQuery } from '../../data/api.ts';
 import { RootState } from '../../data/store.ts';
 import { getBezierLineCoords, getBezierLinePath, pathCommonProps } from './UtilsSvg.ts';
 
 export const EdgeBezier: FC = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
 
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
 
@@ -14,7 +14,7 @@ export const EdgeBezier: FC = () => {
   const gapLength = 6;
   const dashCycle = dashLength + gapLength;
 
-  if (!nodeTypes) {
+  if (!tools) {
     return null;
   }
 
@@ -42,7 +42,7 @@ export const EdgeBezier: FC = () => {
       <g key={ei.id}>
         <style>{`@keyframes dashMove { to { stroke-dashoffset: -${dashCycle} } } `}</style>
         <path
-          d={getBezierLinePath(getBezierLineCoords(getLineCoords(nodeTypes, m, ei)))}
+          d={getBezierLinePath(getBezierLineCoords(getLineCoords(tools, m, ei)))}
           strokeWidth={1}
           stroke="#dddddd"
           fill="none"

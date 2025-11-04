@@ -1,6 +1,6 @@
 export type InsertNodeRequestDto = {
   mapId: number
-  nodeTypeId: number
+  toolId: number
 }
 
 export type MoveNodeRequestDto = {

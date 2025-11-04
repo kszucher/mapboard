@@ -11,7 +11,7 @@ export class EdgeRepository {
         id: true,
         offsetX: true,
         offsetY: true,
-        NodeType: {
+        Tool: {
           select: {
             id: true,
           },
@@ -23,7 +23,7 @@ export class EdgeRepository {
         id: true,
         offsetX: true,
         offsetY: true,
-        NodeType: {
+        Tool: {
           select: {
             id: true,
           },

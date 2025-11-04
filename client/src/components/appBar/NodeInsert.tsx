@@ -1,11 +1,11 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
 import Plus from '../../../assets/plus.svg?react';
-import { api, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
 import { AppDispatch } from '../../data/store.ts';
 
 export const NodeInsert = () => {
-  const nodeTypes = useGetNodeTypeInfoQuery().data || [];
+  const tools = useGetToolInfoQuery().data || [];
   const mapId = useGetMapInfoQuery().data?.id!;
   const dispatch = useDispatch<AppDispatch>();
 
@@ -17,10 +17,10 @@ export const NodeInsert = () => {
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content onCloseAutoFocus={e => e.preventDefault()}>
-        {nodeTypes.map(el => (
+        {tools.map(el => (
           <DropdownMenu.Item
             key={el.id}
-            onClick={() => dispatch(api.endpoints.insertNode.initiate({ mapId, nodeTypeId: el.id! }))}
+            onClick={() => dispatch(api.endpoints.insertNode.initiate({ mapId, toolId: el.id! }))}
           >
             {el.label}
           </DropdownMenu.Item>
