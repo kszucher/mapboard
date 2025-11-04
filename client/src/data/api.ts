@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { backendUrl } from '../urls/Urls.ts';
 import { apiEdge } from './api-edge.ts';
 import { apiMap } from './api-map.ts';
-import { apiTool } from './api-node-type.ts';
+import { apiTool } from './api-tool.ts';
 import { apiNode } from './api-node.ts';
 import { apiShare } from './api-share.ts';
 import { apiTab } from './api-tab.ts';

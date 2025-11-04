@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { ToolRepository } from './node-type.repository';
+import { ToolRepository } from './tool.repository';
 
 @injectable()
 export class ToolService {

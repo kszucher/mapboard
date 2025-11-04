@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { injectable } from 'tsyringe';
-import { CreateToolRequestDto, GetToolQueryResponseDto } from '../../../shared/src/api/api-types-node-type';
+import { CreateToolRequestDto, GetToolQueryResponseDto } from '../../../shared/src/api/api-types-tool';
 import { checkJwt, getWorkspaceId } from '../middleware';
-import { ToolService } from './node-type.service';
+import { ToolService } from './tool.service';
 
 @injectable()
 export class ToolController {
@@ -14,8 +14,8 @@ export class ToolController {
   }
 
   private initializeRoutes() {
-    this.router.post('/get-node-type-info', checkJwt, getWorkspaceId, this.getToolInfo.bind(this));
-    this.router.post('/create-node-type', checkJwt, getWorkspaceId, this.createTool.bind(this));
+    this.router.post('/get-tool-info', checkJwt, getWorkspaceId, this.getToolInfo.bind(this));
+    this.router.post('/create-tool', checkJwt, getWorkspaceId, this.createTool.bind(this));
   }
 
   private async getToolInfo(req: Request, res: Response) {
