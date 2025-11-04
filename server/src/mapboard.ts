@@ -10,9 +10,6 @@ import { AttributeController } from './attribute/attribute.controller';
 import { AttributeRepository } from './attribute/attribute.repository';
 import { DistributionController } from './distribution/distribution.controller';
 import { DistributionService } from './distribution/distribution.service';
-import { EdgeTypeController } from './edge-type/edge-type.controller';
-import { EdgeTypeRepository } from './edge-type/edge-type.repository';
-import { EdgeTypeService } from './edge-type/edge-type.service';
 import { EdgeController } from './edge/edge.controller';
 import { EdgeRepository } from './edge/edge.repository';
 import { EdgeService } from './edge/edge.service';
@@ -95,10 +92,6 @@ export class MapBoard {
     container.registerSingleton(EdgeRepository);
     container.registerSingleton(EdgeController);
 
-    container.registerSingleton(EdgeTypeService);
-    container.registerSingleton(EdgeTypeRepository);
-    container.registerSingleton(EdgeTypeController);
-
     container.registerSingleton(TabService);
     container.registerSingleton(TabRepository);
     container.registerSingleton(TabController);
@@ -129,7 +122,6 @@ export class MapBoard {
     const attributeController = container.resolve(AttributeController);
     const attributeTypeController = container.resolve(AttributeTypeController);
     const edgeController = container.resolve(EdgeController);
-    const edgeTypeController = container.resolve(EdgeTypeController);
     const tabController = container.resolve(TabController);
     const shareController = container.resolve(ShareController);
     const workspaceController = container.resolve(WorkspaceController);
@@ -145,7 +137,6 @@ export class MapBoard {
     this.app.use(attributeController.router);
     this.app.use(attributeTypeController.router);
     this.app.use(edgeController.router);
-    this.app.use(edgeTypeController.router);
     this.app.use(tabController.router);
     this.app.use(shareController.router);
     this.app.use(workspaceController.router);

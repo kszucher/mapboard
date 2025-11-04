@@ -1,17 +1,7 @@
 import { Box, Button, Dialog, Flex, Tabs } from '@radix-ui/themes';
-import { useSelector } from 'react-redux';
-import { DialogState } from '../../data/state-types.ts';
-import { RootState } from '../../data/store.ts';
-import { EdgeTable } from '../tables/EdgeTable.tsx';
 import { NodeTable } from '../tables/NodeTable.tsx';
 
 export const MapConfig = () => {
-  const dialogState = useSelector((state: RootState) => state.slice.dialogState);
-  const dialogMode = {
-    [DialogState.NODE_CONFIG]: 'nodes',
-    [DialogState.EDGE_CONFIG]: 'edges',
-  }[dialogState];
-
   return (
     <Dialog.Content
       style={{
@@ -23,20 +13,11 @@ export const MapConfig = () => {
         transform: 'translateX(-50%)',
       }}
     >
-      <Dialog.Title>{'Config Map'}</Dialog.Title>
-      <Dialog.Description>{'Config map nodes and edges below.'}</Dialog.Description>
-      <Tabs.Root defaultValue={dialogMode} mt="4">
-        <Tabs.List>
-          <Tabs.Trigger value="nodes">Nodes</Tabs.Trigger>
-          <Tabs.Trigger value="edges">Edges</Tabs.Trigger>
-        </Tabs.List>
+      <Dialog.Title>{'Config Tools'}</Dialog.Title>
+      <Dialog.Description>{'Config tools'}</Dialog.Description>
+      <Tabs.Root mt="4">
         <Box pt="3">
-          <Tabs.Content value="nodes" style={{ outline: 'none' }}>
-            <NodeTable />
-          </Tabs.Content>
-          <Tabs.Content value="edges" style={{ outline: 'none' }}>
-            <EdgeTable />
-          </Tabs.Content>
+          <NodeTable />
         </Box>
       </Tabs.Root>
       <Flex gap="3" mt="4" justify="end">

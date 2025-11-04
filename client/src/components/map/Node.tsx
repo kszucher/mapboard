@@ -2,7 +2,6 @@ import { Badge, Box, DropdownMenu, Flex, IconButton, Spinner } from '@radix-ui/t
 import { FC, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getAllowedTargetNodeTypes,
   getNodeColor,
   getNodeHeight,
   getNodeLabel,
@@ -13,13 +12,12 @@ import {
 } from '../../../../shared/src/map/map-getters.ts';
 import Dots from '../../../assets/dots.svg?react';
 import GripVertical from '../../../assets/grip-vertical.svg?react';
-import { api, useGetEdgeTypeInfoQuery, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
+import { api, useGetMapInfoQuery, useGetNodeTypeInfoQuery } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
 import { NodeType } from './NodeType.tsx';
 
 export const Node: FC = () => {
-  const edgeTypes = useGetEdgeTypeInfoQuery().data || [];
   const nodeTypes = useGetNodeTypeInfoQuery().data || [];
   const mapId = useGetMapInfoQuery().data?.id!;
   const nodeOffsetCoords = useSelector((state: RootState) => state.slice.nodeOffsetCoords);
@@ -131,7 +129,6 @@ export const Node: FC = () => {
                   .filter(
                     toNi =>
                       ni.id !== toNi.id && // TODO: also does NOT create a loop
-                      getAllowedTargetNodeTypes(edgeTypes, ni).includes(toNi.nodeTypeId) &&
                       !isExistingEdge(m, ni.id, toNi.id)
                   )
                   .map(toNi => (

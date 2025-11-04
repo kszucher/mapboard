@@ -63,8 +63,6 @@ model NodeType {
   color          Color
   label          String
   AttributeTypes AttributeType[]
-  OutEdgeTypes   EdgeType[]      @relation("OutEdgeTypes")
-  InEdgeTypes    EdgeType[]      @relation("InEdgeTypes")
   Node           Node[]
 }
 
@@ -96,8 +94,6 @@ model Edge {
   id          Int      @id @default(autoincrement())
   mapId       Int
   Map         Map      @relation(fields: [mapId], references: [id])
-  edgeTypeId  Int
-  EdgeType    EdgeType @relation(fields: [edgeTypeId], references: [id])
   workspaceId Int?
   fromNodeId  Int
   FromNode    Node     @relation("FromEdges", fields: [fromNodeId], references: [id])
@@ -108,15 +104,6 @@ model Edge {
   schema      Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
-}
-
-model EdgeType {
-  id             Int      @id @default(autoincrement())
-  fromNodeTypeId Int
-  FromNodeType   NodeType @relation("OutEdgeTypes", fields: [fromNodeTypeId], references: [id])
-  toNodeTypeId   Int
-  ToNodeType     NodeType @relation("InEdgeTypes", fields: [toNodeTypeId], references: [id])
-  Edge           Edge[]
 }
 
 model Tab {

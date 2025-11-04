@@ -1,5 +1,5 @@
 import { M_PADDING, N_PADDING } from '../consts/consts';
-import { Color, Edge, EdgeType, Node, NodeType, M } from '../schema/schema';
+import { Color, Edge, Node, NodeType, M } from '../schema/schema';
 
 export const getNodeType = (nodeTypes: Partial<NodeType>[], n: Node) => nodeTypes.find(nt => nt.id === n.nodeTypeId);
 
@@ -27,10 +27,6 @@ export const getMapHeight = (nodeTypes: Partial<NodeType>[], m: M) => {
   return Number.isFinite(max) ? max + 2 * M_PADDING : 0;
 };
 
-export const getAllowedTargetNodeTypes = (edgeTypes: Partial<EdgeType>[], n: Node) => {
-  return edgeTypes.filter(eti => eti.fromNodeTypeId === n.nodeTypeId).map(eti => eti.toNodeTypeId);
-};
-
 export const isExistingEdge = (m: M, fromNodeId: number, toNodeId: number): boolean =>
   m.e.some(ei => ei.fromNodeId === fromNodeId && ei.toNodeId === toNodeId);
 
@@ -38,19 +34,15 @@ export const getInputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id 
 
 export const getOutputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id === e.toNodeId)!;
 
-export const getLineCoords = (nodeTypes: Partial<NodeType>[], edgeTypes: Partial<EdgeType>[], m: M, e: Edge) => {
+export const getLineCoords = (nodeTypes: Partial<NodeType>[], m: M, e: Edge) => {
   const fromNode = getInputNodeOfEdge(m, e);
   const toNode = getOutputNodeOfEdge(m, e);
-  const leftIndex = edgeTypes
-    .filter(el => el.toNodeTypeId === toNode.nodeTypeId)
-    .map(el => el.fromNodeTypeId)
-    .findIndex(type => type === fromNode.nodeTypeId);
 
   return [
     getNodeRight(nodeTypes, fromNode),
     getNodeTop(fromNode) + 60,
     getNodeLeft(toNode),
-    getNodeTop(toNode) + 60 + leftIndex * 20,
+    getNodeTop(toNode) + 60,
   ];
 };
 

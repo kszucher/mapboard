@@ -65,19 +65,9 @@ export class EdgeRepository {
     });
   }
 
-  async createEdge({
-    mapId,
-    fromNodeId,
-    toNodeId,
-    edgeTypeId,
-  }: {
-    mapId: number;
-    fromNodeId: number;
-    toNodeId: number;
-    edgeTypeId: number;
-  }) {
+  async createEdge({ mapId, fromNodeId, toNodeId }: { mapId: number; fromNodeId: number; toNodeId: number }) {
     return this.prisma.edge.create({
-      data: { mapId, fromNodeId, toNodeId, edgeTypeId },
+      data: { mapId, fromNodeId, toNodeId },
       include: this.edgeInclude,
       omit: { createdAt: true },
     });

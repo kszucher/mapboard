@@ -11,12 +11,13 @@ export const EdgeConnectorFrom: FC = () => {
 
   return m.n.map(ni => {
     const isConnected = m.e.some(ei => ei.fromNodeId === ni.id);
+    const color = radixColorMap[getNodeColor(nodeTypes, ni)];
     return (
       <circle
         key={`${ni.id}_from`}
         r={3}
-        fill={isConnected ? radixColorMap[getNodeColor(nodeTypes, ni)] : 'none'}
-        stroke={radixColorMap[getNodeColor(nodeTypes, ni)]}
+        fill={isConnected ? color : 'none'}
+        stroke={color}
         strokeWidth={1.5}
         transform={`translate(${getNodeRight(nodeTypes, ni)}, ${getNodeTop(ni) + 60})`}
         vectorEffect="non-scaling-stroke"

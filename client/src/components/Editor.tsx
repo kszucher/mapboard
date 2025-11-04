@@ -46,7 +46,7 @@ export const Editor: FC = () => {
           </AlertDialog.Root>
           {dialogState === DialogState.MAP_ACTIONS_RENAME && <MapActionsRename />}
           {dialogState === DialogState.MAP_ACTIONS_SHARE && <MapActionsShare />}
-          {[DialogState.NODE_CONFIG, DialogState.EDGE_CONFIG].includes(dialogState) && <MapConfig />}
+          {dialogState === DialogState.TOOL_CONFIG && <MapConfig />}
           {dialogState === DialogState.MAP_SHARES && <MapShares />}
         </Dialog.Root>
       )}

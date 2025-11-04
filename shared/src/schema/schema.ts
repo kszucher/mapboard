@@ -71,12 +71,6 @@ export type Edge = {
   updatedAt: Date;
 }
 
-export type EdgeType = {
-  id: number;
-  fromNodeTypeId: number;
-  toNodeTypeId: number;
-}
-
 export type Share = {
   id: number
   mapId: number
