@@ -49,6 +49,8 @@ model Node {
   offsetX      Int
   offsetY      Int
   isProcessing Boolean  @default(false)
+  inputValue   Json?
+  outputValue  Json?
   FromEdges    Edge[]   @relation("FromEdges")
   ToEdges      Edge[]   @relation("ToEdges")
   createdAt    DateTime @default(now())
@@ -56,12 +58,14 @@ model Node {
 }
 
 model Tool {
-  id    Int    @id @default(autoincrement())
-  w     Int
-  h     Int
-  color Color
-  label String
-  Node  Node[]
+  id           Int    @id @default(autoincrement())
+  w            Int
+  h            Int
+  color        Color
+  label        String
+  inputSchema  Json?
+  outputSchema Json?
+  Node         Node[]
 }
 
 model Edge {
