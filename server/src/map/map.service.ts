@@ -93,7 +93,7 @@ export class MapService {
 
     const newNodes = await this.nodeRepository.createNodes({
       mapId: newMap.id,
-      nodes: copyNodes.map(({ id, ...rest }) => ({ ...rest, mapId: newMap.id })),
+      nodes: copyNodes.map(({ id, inputValue, outputValue, ...rest }) => ({ ...rest, mapId: newMap.id })),
     });
 
     const nodeIdMap = new Map(copyNodes.map((n, i) => [n.id, newNodes[i].id]));
