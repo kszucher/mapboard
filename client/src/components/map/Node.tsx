@@ -13,7 +13,6 @@ import {
 import Dots from '../../../assets/dots.svg?react';
 import GripVertical from '../../../assets/grip-vertical.svg?react';
 import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
-import { actions } from '../../data/reducer.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
 import { NodeBody } from './NodeBody.tsx';
 
@@ -67,48 +66,6 @@ export const Node: FC = () => {
           size="1"
           color="gray"
           style={{ cursor: 'pointer', pointerEvents: 'auto', background: 'none' }}
-          onMouseDown={e => {
-            let didMove = false;
-            e.stopPropagation();
-            dispatch(actions.moveNodePreviewStart({ e }));
-            const abortController = new AbortController();
-            const { signal } = abortController;
-            window.addEventListener(
-              'mousemove',
-              e => {
-                e.preventDefault();
-                didMove = true;
-                dispatch(actions.moveNodePreviewUpdate({ tools, n: ni, e }));
-              },
-              { signal }
-            );
-            window.addEventListener(
-              'mouseup',
-              e => {
-                abortController.abort();
-                e.preventDefault();
-                if (didMove) {
-                  dispatch(
-                    actions.moveNodeOptimistic({
-                      nodeId: ni.id,
-                      offsetX: nodeOffsetCoordsRef.current[0],
-                      offsetY: nodeOffsetCoordsRef.current[1],
-                    })
-                  );
-                  dispatch(
-                    api.endpoints.moveNode.initiate({
-                      mapId,
-                      nodeId: ni.id,
-                      offsetX: nodeOffsetCoordsRef.current[0],
-                      offsetY: nodeOffsetCoordsRef.current[1],
-                    })
-                  );
-                  dispatch(actions.moveNodePreviewEnd());
-                }
-              },
-              { signal }
-            );
-          }}
         >
           <GripVertical />
         </IconButton>
@@ -132,20 +89,7 @@ export const Node: FC = () => {
                       !isExistingEdge(m, ni.id, toNi.id)
                   )
                   .map(toNi => (
-                    <DropdownMenu.Item
-                      key={toNi.id}
-                      onClick={() => {
-                        dispatch(
-                          api.endpoints.insertEdge.initiate({
-                            mapId,
-                            fromNodeId: ni.id,
-                            toNodeId: toNi.id,
-                          })
-                        );
-                      }}
-                    >
-                      {getNodeLabel(tools, toNi) + ' N' + toNi.iid}
-                    </DropdownMenu.Item>
+                    <DropdownMenu.Item key={toNi.id}>{getNodeLabel(tools, toNi) + ' N' + toNi.iid}</DropdownMenu.Item>
                   ))}
               </DropdownMenu.SubContent>
             </DropdownMenu.Sub>

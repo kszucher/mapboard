@@ -1,6 +1,4 @@
 import { FC } from 'react';
-import { ConfigMouse } from './ConfigMouse.tsx';
-import { ConfigView } from './ConfigView.tsx';
 import { Logo } from './Logo.tsx';
 import { MapConfig } from './MapConfig.tsx';
 import { MapSelector } from './MapSelector.tsx';
@@ -26,8 +24,6 @@ export const AppBar: FC = () => {
           <NodeRedo />
         </div>
         <div className="flex flex-row items-center gap-1">
-          <ConfigMouse />
-          <ConfigView />
           <UserAccount />
         </div>
       </div>

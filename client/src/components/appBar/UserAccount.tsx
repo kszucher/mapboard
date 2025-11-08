@@ -1,16 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { AlertDialog, Dialog, DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
-
-import { ColorMode } from '../../../../shared/src/schema/schema.ts';
 import User from '../../../assets/user.svg?react';
-import { api, useGetUserInfoQuery } from '../../data/api.ts';
+import { api } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AlertDialogState, DialogState } from '../../data/state-types.ts';
 import { AppDispatch } from '../../data/store.ts';
 
 export const UserAccount = () => {
-  const colorMode = useGetUserInfoQuery().data?.userInfo.colorMode;
   const dispatch = useDispatch<AppDispatch>();
   const { logout } = useAuth0();
 
@@ -22,12 +19,6 @@ export const UserAccount = () => {
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content className="bg-red-300" onCloseAutoFocus={e => e.preventDefault()}>
-        <DropdownMenu.Item onClick={() => dispatch(api.endpoints.toggleColorMode.initiate())}>
-          {colorMode === ColorMode.DARK ? 'Light Mode' : 'Dark Mode'}
-        </DropdownMenu.Item>
-
-        <DropdownMenu.Separator />
-
         <Dialog.Trigger>
           <DropdownMenu.Item onClick={() => dispatch(actions.setDialogState(DialogState.MAP_SHARES))}>
             {'Map Shares'}

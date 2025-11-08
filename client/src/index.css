@@ -21,3 +21,22 @@ img {
 ::-webkit-scrollbar {
     display: none;
 }
+
+.react-flow {
+    --xy-background-color: #404040;
+
+    /* Node defaults */
+    --xy-node-background-color-default: #555555;
+    --xy-node-color-default: #fff;
+    --xy-node-border-default: 1px solid #333;
+
+    /* Edge defaults */
+    --xy-edge-stroke-default: #ff0000;
+    --xy-edge-stroke-width-default: 2px;
+    --xy-edge-stroke-selected-default: #ffff00;
+}
+
+/* Hide watermark */
+.react-flow__attribution {
+    display: none !important;
+}
