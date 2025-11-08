@@ -36,7 +36,7 @@ export const CustomNode = ({ data }: NodeProps<Node>) => {
       {/* Top-right dots button */}
       <Box position="absolute" top="8px" right="8px">
         <IconButton variant="soft" size="1" color="gray" style={{ background: 'none' }}>
-          <Dots />
+          <Dots onClick={() => console.log('dots clicked')} />
         </IconButton>
       </Box>
 
@@ -47,8 +47,8 @@ export const CustomNode = ({ data }: NodeProps<Node>) => {
       </div>
 
       {/* Handles */}
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="target" position={Position.Left} />
+      <Handle type="source" position={Position.Right} />
     </div>
   );
 };

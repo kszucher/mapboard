@@ -21,30 +21,28 @@ export const ReactFlowMap = () => {
 
   const onConnect = useCallback(params => setEdges(els => addEdge(params, els)), []);
 
-  // 🔄 Update nodes and edges whenever `m` changes
   useEffect(() => {
     if (!m) return;
 
-    const mappedNodes =
-      m.n.map(n => ({
-        id: n.id.toString(),
-        position: { x: n.offsetX || 0, y: n.offsetY || 0 },
-        data: { label: `Tool ${n.toolId}`, ...n },
-        sourcePosition: Position.Right,
-        targetPosition: Position.Left,
-      })) || [];
+    const mappedNodes = m.n.map(n => ({
+      id: n.id.toString(),
+      type: 'custom',
+      position: { x: n.offsetX || 0, y: n.offsetY || 0 },
+      data: { label: `Tool ${n.toolId}`, ...n },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    }));
 
-    const mappedEdges =
-      m.e.map(e => ({
-        id: e.id.toString(),
-        source: e.fromNodeId.toString(),
-        target: e.toNodeId.toString(),
-        animated: false,
-        style: {
-          stroke: e.lineColor || '#ccc',
-          strokeWidth: e.lineWidth || 1,
-        },
-      })) || [];
+    const mappedEdges = m.e.map(e => ({
+      id: e.id.toString(),
+      source: e.fromNodeId.toString(),
+      target: e.toNodeId.toString(),
+      animated: false,
+      style: {
+        stroke: e.lineColor || '#ccc',
+        strokeWidth: e.lineWidth || 1,
+      },
+    }));
 
     // 🚀 Apply new data to ReactFlow
     setNodes(mappedNodes);
