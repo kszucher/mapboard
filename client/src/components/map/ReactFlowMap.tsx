@@ -3,7 +3,7 @@ import { ReactFlow, Controls, useNodesState, useEdgesState, addEdge, Position } 
 import '@xyflow/react/dist/style.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../data/store.ts';
-import { CustomNode } from './ReactFlowMapnode.tsx';
+import { CustomNode } from './ReactFlowMapNode.tsx';
 
 const styles = {
   background: '#404040',
