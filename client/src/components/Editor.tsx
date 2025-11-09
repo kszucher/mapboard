@@ -11,8 +11,8 @@ import { UserAccountDelete } from './alertDialogs/UserAccountDelete.tsx';
 import { AppBar } from './appBar/AppBar.tsx';
 import { MapActionsRename } from './dialogs/MapActionsRename.tsx';
 import { MapActionsShare } from './dialogs/MapActionsShare.tsx';
-import { ToolConfig } from './dialogs/ToolConfig.tsx';
 import { MapShares } from './dialogs/MapShares.tsx';
+import { ToolConfig } from './dialogs/ToolConfig.tsx';
 import ReactFlowMap from './map/ReactFlowMap.tsx';
 import { Window } from './window/Window.tsx';
 

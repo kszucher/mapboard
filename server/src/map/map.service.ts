@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
-import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { getTopologicalSort } from '../../../shared/src/algorithms/topological-sort';
+import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { M, ShareAccess } from '../../../shared/src/schema/schema';
 import { DistributionService } from '../distribution/distribution.service';
 import { EdgeRepository } from '../edge/edge.repository';

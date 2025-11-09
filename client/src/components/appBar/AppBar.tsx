@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { Logo } from './Logo.tsx';
-import { ToolConfig } from './ToolConfig.tsx';
 import { MapSelector } from './MapSelector.tsx';
 import { NodeExecute } from './NodeExecute.tsx';
 import { NodeInsert } from './NodeInsert.tsx';
 import { NodeRedo } from './NodeRedo.tsx';
 import { NodeUndo } from './NodeUndo.tsx';
+import { ToolConfig } from './ToolConfig.tsx';
 import { UserAccount } from './UserAccount.tsx';
 
 export const AppBar: FC = () => {
