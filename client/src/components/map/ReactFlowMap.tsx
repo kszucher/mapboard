@@ -1,9 +1,19 @@
 import { useEffect, useCallback } from 'react';
-import { ReactFlow, Controls, useNodesState, useEdgesState, addEdge, Position } from '@xyflow/react';
+import {
+  ReactFlow,
+  Controls,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Position,
+  NodeTypes,
+  type Connection,
+  type Edge,
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../data/store.ts';
-import { CustomNode } from './ReactFlowMapNode.tsx';
+import { AppFlowNode, CustomNode } from './ReactFlowMapNode.tsx';
 
 const styles = {
   background: '#404040',
@@ -11,29 +21,29 @@ const styles = {
   height: 300,
 };
 
-const nodeTypes = { custom: CustomNode };
+const nodeTypes: NodeTypes = { custom: CustomNode };
 
 export const ReactFlowMap = () => {
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppFlowNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  const onConnect = useCallback(params => setEdges(els => addEdge(params, els)), []);
+  const onConnect = useCallback((params: Connection) => setEdges(els => addEdge(params, els)), []);
 
   useEffect(() => {
     if (!m) return;
 
-    const mappedNodes = m.n.map(n => ({
+    const mappedNodes: AppFlowNode[] = m.n.map(n => ({
       id: n.id.toString(),
       type: 'custom',
-      position: { x: n.offsetX || 0, y: n.offsetY || 0 },
-      data: { label: `Tool ${n.toolId}`, ...n },
+      position: { x: n.offsetX, y: n.offsetY },
+      data: { ...n, label: `Tool ${n.toolId}` },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
     }));
 
-    const mappedEdges = m.e.map(e => ({
+    const mappedEdges: Edge[] = m.e.map(e => ({
       id: e.id.toString(),
       source: e.fromNodeId.toString(),
       target: e.toNodeId.toString(),
@@ -44,7 +54,6 @@ export const ReactFlowMap = () => {
       },
     }));
 
-    // 🚀 Apply new data to ReactFlow
     setNodes(mappedNodes);
     setEdges(mappedEdges);
   }, [m, setNodes, setEdges]);
@@ -63,11 +72,9 @@ export const ReactFlowMap = () => {
       style={styles}
       colorMode="dark"
       zoomOnScroll={false}
-      panOnScroll={true}
+      panOnScroll
     >
-      {/*<Background />*/}
       <Controls />
-      {/*<MiniMap />*/}
     </ReactFlow>
   );
 };
