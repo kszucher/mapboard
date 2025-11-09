@@ -1,19 +1,19 @@
-import { useEffect, useCallback } from 'react';
 import {
-  ReactFlow,
-  Controls,
-  useNodesState,
-  useEdgesState,
   addEdge,
-  Position,
-  NodeTypes,
   type Connection,
-  type Edge,
+  Controls,
+  NodeTypes,
+  Position,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../data/store.ts';
-import { AppFlowNode, CustomNode } from './ReactFlowMapNode.tsx';
+import { CustomNode } from './ReactFlowMapNode.tsx';
+import { AppFlowEdge, AppFlowNode } from './types.ts';
 
 const styles = {
   background: '#404040',
@@ -27,7 +27,7 @@ export const ReactFlowMap = () => {
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<AppFlowNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<AppFlowEdge>([]);
 
   const onConnect = useCallback((params: Connection) => setEdges(els => addEdge(params, els)), []);
 
@@ -43,7 +43,7 @@ export const ReactFlowMap = () => {
       targetPosition: Position.Left,
     }));
 
-    const mappedEdges: Edge[] = m.e.map(e => ({
+    const mappedEdges: AppFlowEdge[] = m.e.map(e => ({
       id: e.id.toString(),
       source: e.fromNodeId.toString(),
       target: e.toNodeId.toString(),

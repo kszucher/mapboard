@@ -1,10 +1,7 @@
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Badge, Box, Flex, IconButton } from '@radix-ui/themes';
-import type { Node as FlowNode } from '@xyflow/react';
-import type { Node as BackendNode } from '../../../../shared/src/schema/schema.ts';
 import Dots from '../../../assets/dots.svg?react';
-
-export type AppFlowNode = FlowNode<BackendNode, 'custom'>;
+import { AppFlowNode } from './types.ts';
 
 export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
   if (!data) return null;
