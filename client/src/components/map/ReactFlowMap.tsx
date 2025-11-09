@@ -16,12 +16,6 @@ import { RootState } from '../../data/store.ts';
 import { CustomNode } from './ReactFlowMapNode.tsx';
 import { AppFlowEdge, AppFlowNode } from './types.ts';
 
-const styles = {
-  background: '#404040',
-  width: '100%',
-  height: 300,
-};
-
 const nodeTypes: NodeTypes = { custom: CustomNode };
 
 export const ReactFlowMap = () => {
@@ -63,21 +57,22 @@ export const ReactFlowMap = () => {
   if (!m) return null;
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      nodeTypes={nodeTypes}
-      onConnect={onConnect}
-      fitView
-      style={styles}
-      colorMode="dark"
-      zoomOnScroll={false}
-      panOnScroll
-    >
-      <Controls />
-    </ReactFlow>
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodeTypes={nodeTypes}
+        onConnect={onConnect}
+        fitView
+        colorMode="dark"
+        zoomOnScroll={false}
+        panOnScroll
+      >
+        <Controls />
+      </ReactFlow>
+    </div>
   );
 };
 

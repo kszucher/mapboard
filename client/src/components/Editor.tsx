@@ -13,7 +13,7 @@ import { MapActionsRename } from './dialogs/MapActionsRename.tsx';
 import { MapActionsShare } from './dialogs/MapActionsShare.tsx';
 import { MapConfig } from './dialogs/MapConfig.tsx';
 import { MapShares } from './dialogs/MapShares.tsx';
-import { Map } from './map/Map.tsx';
+import ReactFlowMap from './map/ReactFlowMap.tsx';
 import { Window } from './window/Window.tsx';
 
 export const Editor: FC = () => {
@@ -39,7 +39,7 @@ export const Editor: FC = () => {
           <AlertDialog.Root
             onOpenChange={isOpen => !isOpen && dispatch(actions.setAlertDialogState(AlertDialogState.NONE))}
           >
-            <Map />
+            <ReactFlowMap />
             <AppBar />
             <Window />
             {alertDialogState === AlertDialogState.DELETE_ACCOUNT && <UserAccountDelete />}

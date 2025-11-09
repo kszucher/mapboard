@@ -1,22 +1,4 @@
-import { M_PADDING } from '../consts/consts';
-import { Color, Edge, Node, Tool, M } from '../schema/schema';
-
-export const getTool = (tools: Partial<Tool>[], n: Node) => tools.find(nt => nt.id === n.toolId);
-
-export const getNodeLabel = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.label || '';
-
-export const getNodeColor = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.color || Color.gray;
-
-export const getNodeLeft = (n: Node) => n.offsetX + M_PADDING;
-
-export const getNodeTop = (n: Node) => n.offsetY + M_PADDING;
-
-export const getNodeWidth = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.w || 0;
-
-export const getNodeHeight = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.h || 0;
-
-export const isExistingEdge = (m: M, fromNodeId: number, toNodeId: number): boolean =>
-  m.e.some(ei => ei.fromNodeId === fromNodeId && ei.toNodeId === toNodeId);
+import { Edge, Node } from '../schema/schema';
 
 // Kahn's algorithm
 export const getTopologicalSort = (m: {

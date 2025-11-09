@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, IconButton } from '@radix-ui/themes';
+import { Badge, Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import Dots from '../../../assets/dots.svg?react';
 import { AppFlowNode } from './types.ts';
@@ -9,16 +9,13 @@ export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
   return (
     <div
       style={{
-        position: 'relative',
         background: '#222222',
-        color: '#fff',
-        border: '1px solid #333',
-        borderRadius: 8,
+        borderRadius: 16,
         padding: 12,
-        minWidth: 150,
+        minWidth: 200,
         minHeight: 80,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        fontFamily: 'sans-serif',
+        transition: 'left 0.3s, top 0.3s',
+        transitionTimingFunction: 'cubic-bezier(0.0,0.0,0.58,1.0)',
       }}
     >
       {/* Top-left badges */}
@@ -28,23 +25,33 @@ export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
             {'N' + data.node.iid}
           </Badge>
           <Badge color={data.tool.color} size="2">
-            {data.tool.label || 'Node Label'}
+            {data.tool.label}
           </Badge>
         </Flex>
       </Box>
 
       {/* Top-right dots button */}
       <Box position="absolute" top="8px" right="8px">
-        <IconButton variant="soft" size="1" color="gray" style={{ background: 'none' }}>
-          <Dots onClick={() => console.log('dots clicked')} />
-        </IconButton>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton variant="soft" size="1" color="gray" style={{ pointerEvents: 'auto', background: 'none' }}>
+              <Dots />
+            </IconButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content onCloseAutoFocus={e => e.preventDefault()}>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger className="DropdownMenuSubTrigger">{'Connect To...'}</DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent>
+                <DropdownMenu.Item key={1}></DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+            <DropdownMenu.Item onClick={() => {}}>{'Delete'}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       </Box>
 
       {/* Node body */}
-      <div style={{ marginTop: 40 }}>
-        <strong>{data.node.iid || 'Node Title'}</strong>
-        <p style={{ fontSize: 12, color: '#ccc', margin: 0 }}>{data.node.iid || 'Description or body goes here'}</p>
-      </div>
+      <div style={{ marginTop: 40 }}>{'Instructions'}</div>
 
       {/* Handles */}
       <Handle type="target" position={Position.Left} />
