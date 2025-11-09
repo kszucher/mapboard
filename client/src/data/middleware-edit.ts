@@ -8,7 +8,6 @@ import { RootState } from './store.ts';
 const blockedActions = isAnyOf(
   actions.undo,
   actions.redo,
-  actions.moveNodeOptimistic,
   actions.updateNodeOptimistic,
   api.endpoints.renameMap.matchPending,
   api.endpoints.deleteMap.matchPending,

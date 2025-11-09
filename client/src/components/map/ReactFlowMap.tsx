@@ -12,19 +12,24 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { MouseEvent, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useGetToolInfoQuery } from '../../data/api.ts';
-import { RootState } from '../../data/store.ts';
+import { useDispatch, useSelector } from 'react-redux';
+import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
+import { AppDispatch, RootState } from '../../data/store.ts';
 import { CustomNode } from './ReactFlowMapNode.tsx';
 import { AppFlowEdge, AppFlowNode } from './types.ts';
 
 const nodeTypes: NodeTypes = { custom: CustomNode };
 
 const FlowContent = () => {
+  const mapId = useGetMapInfoQuery().data?.id!;
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
   const tools = useGetToolInfoQuery().data;
+
+  const dispatch = useDispatch<AppDispatch>();
+
   const [nodes, setNodes, onNodesChange] = useNodesState<AppFlowNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppFlowEdge>([]);
+
   const { fitView } = useReactFlow();
 
   const onConnect = useCallback((params: Connection) => setEdges(els => addEdge(params, els)), []);
@@ -90,7 +95,16 @@ const FlowContent = () => {
       zoomOnScroll={false}
       zoomOnDoubleClick={false}
       panOnScroll
-      onNodeDragStop={(_, node) => console.log(node)}
+      onNodeDragStop={(_, node) =>
+        dispatch(
+          api.endpoints.moveNode.initiate({
+            mapId,
+            nodeId: Number(node.id),
+            offsetX: Math.round(node.position.x),
+            offsetY: Math.round(node.position.y),
+          })
+        )
+      }
     >
       <Controls />
     </ReactFlow>

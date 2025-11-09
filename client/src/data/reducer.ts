@@ -4,7 +4,6 @@ import {
   NodeUpdateDown,
   UpdateMapGraphEventPayload,
 } from '../../../shared/src/api/api-types-distribution.ts';
-import { alignNodes } from '../../../shared/src/map/map-setters.ts';
 import { Edge, Node } from '../../../shared/src/schema/schema.ts';
 import { api } from './api.ts';
 import { state, stateDefault } from './state-defaults.ts';
@@ -31,24 +30,6 @@ export const slice = createSlice({
     },
     redo(state) {
       state.commitIndex = state.commitIndex < state.commitList.length - 1 ? state.commitIndex + 1 : state.commitIndex;
-    },
-    moveNodeOptimistic(
-      state,
-      {
-        payload: { nodeId, offsetX, offsetY },
-      }: PayloadAction<{
-        nodeId: number;
-        offsetX: number;
-        offsetY: number;
-      }>
-    ) {
-      const m = structuredClone(current(state.commitList[state.commitIndex]));
-      const newM = {
-        n: m.n.map(ni => (ni.id === nodeId ? { ...ni, offsetX, offsetY, updatedAt: new Date() } : ni)),
-        e: m.e,
-      };
-      alignNodes(newM);
-      state.commitList = [...state.commitList.slice(0, state.commitIndex), newM];
     },
     updateNodeOptimistic(state, { payload: { node } }: PayloadAction<{ node: Partial<Node> }>) {
       const m = structuredClone(current(state.commitList[state.commitIndex]));

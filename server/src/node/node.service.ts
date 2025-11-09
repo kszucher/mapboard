@@ -34,17 +34,15 @@ export class NodeService {
     offsetY: number;
     workspaceId: number;
   }) {
-    await this.nodeRepository.updateNode({
+    const node = await this.nodeRepository.updateNode({
       nodeId,
       workspaceId,
       params: { offsetX, offsetY },
     });
 
-    const nodes = await this.nodeRepository.align({ workspaceId, mapId });
-
     await this.distributionService.publish({
       type: SSE_EVENT_TYPE.INVALIDATE_MAP_GRAPH,
-      payload: { mapId, nodes: { update: nodes } },
+      payload: { mapId, nodes: { update: [node] } },
     });
   }
 
@@ -52,20 +50,18 @@ export class NodeService {
     await this.nodeRepository.clearProcessingAll();
   }
 
-  async deleteNode({ workspaceId, mapId, nodeId }: { mapId: number; nodeId: number; workspaceId: number }) {
+  async deleteNode({ mapId, nodeId }: { mapId: number; nodeId: number }) {
     const edgesOfNode = await this.edgeRepository.getEdgesOfNode({ nodeId });
 
     await this.edgeRepository.deleteEdges({ edgeIds: edgesOfNode.map(e => e.id) });
 
     await this.nodeRepository.deleteNode({ nodeId });
 
-    const nodes = await this.nodeRepository.align({ workspaceId, mapId });
-
     await this.distributionService.publish({
       type: SSE_EVENT_TYPE.INVALIDATE_MAP_GRAPH,
       payload: {
         mapId,
-        nodes: { update: nodes, delete: [nodeId] },
+        nodes: { delete: [nodeId] },
         edges: { delete: edgesOfNode.map(e => e.id) },
       },
     });

@@ -33,9 +33,8 @@ export class NodeController {
   }
 
   private async deleteNode(req: Request, res: Response) {
-    const { workspaceId } = req as any;
     const params: DeleteNodeRequestDto = req.body;
-    await this.nodeService.deleteNode({ workspaceId, ...params });
+    await this.nodeService.deleteNode(params);
     res.json();
   }
 }

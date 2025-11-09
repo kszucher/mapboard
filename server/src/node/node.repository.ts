@@ -5,15 +5,6 @@ import { Prisma, PrismaClient } from '../generated/client';
 export class NodeRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async getNode({ mapId, nodeId }: { mapId: number; nodeId: number }) {
-    return this.prisma.node.findFirstOrThrow({
-      where: {
-        mapId,
-        id: nodeId,
-      },
-    });
-  }
-
   async getNodes({ mapId }: { mapId: number }) {
     return this.prisma.node.findMany({
       where: { mapId },
@@ -31,13 +22,6 @@ export class NodeRepository {
           },
         },
       },
-    });
-  }
-
-  async getNodeMapConfig({ nodeId }: { nodeId: number }) {
-    return this.prisma.node.findFirstOrThrow({
-      where: { id: nodeId },
-      select: { toolId: true },
     });
   }
 
@@ -103,29 +87,6 @@ export class NodeRepository {
       select: {
         id: true,
         workspaceId: true,
-        updatedAt: true,
-      },
-    });
-  }
-
-  async align({ workspaceId, mapId }: { workspaceId: number; mapId: number }) {
-    const nodes = await this.prisma.node.findMany({
-      where: { mapId },
-      select: { offsetX: true, offsetY: true },
-    });
-
-    return this.prisma.node.updateManyAndReturn({
-      where: { mapId },
-      data: {
-        workspaceId,
-        offsetX: { decrement: Math.min(...nodes.map(node => node.offsetX)) },
-        offsetY: { decrement: Math.min(...nodes.map(node => node.offsetY)) },
-      },
-      select: {
-        id: true,
-        workspaceId: true,
-        offsetX: true,
-        offsetY: true,
         updatedAt: true,
       },
     });
