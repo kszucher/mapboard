@@ -1,5 +1,5 @@
-import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Badge, Box, Flex, IconButton } from '@radix-ui/themes';
+import { Handle, NodeProps, Position } from '@xyflow/react';
 import Dots from '../../../assets/dots.svg?react';
 import { AppFlowNode } from './types.ts';
 
@@ -25,10 +25,10 @@ export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
       <Box position="absolute" top="8px" left="8px">
         <Flex direction="row" gap="4px" align="center">
           <Badge color="gray" size="2">
-            {'N' + (data.iid || 1)}
+            {'N' + data.node.iid}
           </Badge>
-          <Badge color="blue" size="2">
-            {data.iid || 'Node Label'}
+          <Badge color={data.tool.color} size="2">
+            {data.tool.label || 'Node Label'}
           </Badge>
         </Flex>
       </Box>
@@ -42,8 +42,8 @@ export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
 
       {/* Node body */}
       <div style={{ marginTop: 40 }}>
-        <strong>{data.iid || 'Node Title'}</strong>
-        <p style={{ fontSize: 12, color: '#ccc', margin: 0 }}>{data.iid || 'Description or body goes here'}</p>
+        <strong>{data.node.iid || 'Node Title'}</strong>
+        <p style={{ fontSize: 12, color: '#ccc', margin: 0 }}>{data.node.iid || 'Description or body goes here'}</p>
       </div>
 
       {/* Handles */}

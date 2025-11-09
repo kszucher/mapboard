@@ -1,4 +1,4 @@
-import { M_PADDING, N_PADDING } from '../consts/consts';
+import { M_PADDING } from '../consts/consts';
 import { Color, Edge, Node, Tool, M } from '../schema/schema';
 
 export const getTool = (tools: Partial<Tool>[], n: Node) => tools.find(nt => nt.id === n.toolId);
@@ -15,36 +15,8 @@ export const getNodeWidth = (tools: Partial<Tool>[], n: Node) => getTool(tools, 
 
 export const getNodeHeight = (tools: Partial<Tool>[], n: Node) => getTool(tools, n)?.h || 0;
 
-export const getNodeRight = (tools: Partial<Tool>[], n: Node) => n.offsetX + getNodeWidth(tools, n) + N_PADDING;
-
-export const getMapWidth = (tools: Partial<Tool>[], m: M) => {
-  const max = Math.max(...m.n.map(ni => ni.offsetX + getNodeWidth(tools, ni) + N_PADDING));
-  return Number.isFinite(max) ? max + 2 * M_PADDING : 0;
-};
-
-export const getMapHeight = (tools: Partial<Tool>[], m: M) => {
-  const max = Math.max(...m.n.map(ni => ni.offsetY + getNodeHeight(tools, ni) + N_PADDING));
-  return Number.isFinite(max) ? max + 2 * M_PADDING : 0;
-};
-
 export const isExistingEdge = (m: M, fromNodeId: number, toNodeId: number): boolean =>
   m.e.some(ei => ei.fromNodeId === fromNodeId && ei.toNodeId === toNodeId);
-
-export const getInputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id === e.fromNodeId)!;
-
-export const getOutputNodeOfEdge = (m: M, e: Edge): Node => m.n.find(ni => ni.id === e.toNodeId)!;
-
-export const getLineCoords = (tools: Partial<Tool>[], m: M, e: Edge) => {
-  const fromNode = getInputNodeOfEdge(m, e);
-  const toNode = getOutputNodeOfEdge(m, e);
-
-  return [
-    getNodeRight(tools, fromNode),
-    getNodeTop(fromNode) + 60,
-    getNodeLeft(toNode),
-    getNodeTop(toNode) + 60,
-  ];
-};
 
 // Kahn's algorithm
 export const getTopologicalSort = (m: {

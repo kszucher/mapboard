@@ -11,6 +11,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useGetToolInfoQuery } from '../../data/api.ts';
 import { RootState } from '../../data/store.ts';
 import { CustomNode } from './ReactFlowMapNode.tsx';
 import { AppFlowEdge, AppFlowNode } from './types.ts';
@@ -25,6 +26,7 @@ const nodeTypes: NodeTypes = { custom: CustomNode };
 
 export const ReactFlowMap = () => {
   const m = useSelector((state: RootState) => state.slice.commitList[state.slice.commitIndex]);
+  const tools = useGetToolInfoQuery().data;
 
   const [nodes, setNodes, onNodesChange] = useNodesState<AppFlowNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppFlowEdge>([]);
@@ -32,13 +34,13 @@ export const ReactFlowMap = () => {
   const onConnect = useCallback((params: Connection) => setEdges(els => addEdge(params, els)), []);
 
   useEffect(() => {
-    if (!m) return;
+    if (!m || !tools) return;
 
     const mappedNodes: AppFlowNode[] = m.n.map(n => ({
       id: n.id.toString(),
       type: 'custom',
       position: { x: n.offsetX, y: n.offsetY },
-      data: { ...n, label: `Tool ${n.toolId}` },
+      data: { node: n, tool: tools.find(el => el.id === n.toolId)! },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
     }));
@@ -56,7 +58,7 @@ export const ReactFlowMap = () => {
 
     setNodes(mappedNodes);
     setEdges(mappedEdges);
-  }, [m, setNodes, setEdges]);
+  }, [m, tools, setNodes, setEdges]);
 
   if (!m) return null;
 

@@ -1,5 +1,5 @@
 import type { Edge as FlowEdge, Node as FlowNode } from '@xyflow/react';
-import type { Edge as BackendEdge, Node as BackendNode } from '../../../../shared/src/schema/schema.ts';
+import { Edge as BackendEdge, Node as BackendNode, Tool } from '../../../../shared/src/schema/schema.ts';
 
-export type AppFlowNode = FlowNode<BackendNode, 'custom'>;
-export type AppFlowEdge = FlowEdge<BackendEdge, 'custom'>;
+export type AppFlowNode = FlowNode<{ node: BackendNode; tool: Tool }, 'custom'>;
+export type AppFlowEdge = FlowEdge<{ edge: BackendEdge }, 'custom'>;
