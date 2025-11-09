@@ -1,9 +1,16 @@
 import { Badge, Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { Handle, NodeProps, Position } from '@xyflow/react';
+import { useDispatch } from 'react-redux';
 import Dots from '../../../assets/dots.svg?react';
+import { api, useGetMapInfoQuery } from '../../data/api.ts';
+import { AppDispatch } from '../../data/store.ts';
 import { AppFlowNode } from './types.ts';
 
 export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
+  const mapId = useGetMapInfoQuery().data?.id!;
+
+  const dispatch = useDispatch<AppDispatch>();
+
   if (!data) return null;
 
   return (
@@ -45,7 +52,11 @@ export const CustomNode = ({ data }: NodeProps<AppFlowNode>) => {
                 <DropdownMenu.Item key={1}></DropdownMenu.Item>
               </DropdownMenu.SubContent>
             </DropdownMenu.Sub>
-            <DropdownMenu.Item onClick={() => {}}>{'Delete'}</DropdownMenu.Item>
+            <DropdownMenu.Item
+              onClick={() => dispatch(api.endpoints.deleteNode.initiate({ mapId, nodeId: data.node.id }))}
+            >
+              {'Delete'}
+            </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </Box>

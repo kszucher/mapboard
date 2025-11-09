@@ -90,6 +90,7 @@ const FlowContent = () => {
       zoomOnScroll={false}
       zoomOnDoubleClick={false}
       panOnScroll
+      onNodeDragStop={(_, node) => console.log(node)}
     >
       <Controls />
     </ReactFlow>
