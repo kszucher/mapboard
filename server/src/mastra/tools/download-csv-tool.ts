@@ -1,4 +1,3 @@
-// src/mastra/tools/download-csv-tool.ts
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 
@@ -19,9 +18,3 @@ export const downloadCsvTool = createTool({
     return { csv };
   },
 });
-
-
-// url to csv
-// csv to sql
-// also query to sql
-// etc., but not very motivating...
