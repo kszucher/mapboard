@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, Flex, Tabs } from '@radix-ui/themes';
 import { ToolTable } from '../tables/ToolTable.tsx';
 
-export const MapConfig = () => {
+export const ToolConfig = () => {
   return (
     <Dialog.Content
       style={{
@@ -14,7 +14,7 @@ export const MapConfig = () => {
       }}
     >
       <Dialog.Title>{'Config Tools'}</Dialog.Title>
-      <Dialog.Description>{'Config tools'}</Dialog.Description>
+      <Dialog.Description>{'Config Tools'}</Dialog.Description>
       <Tabs.Root mt="4">
         <Box pt="3">
           <ToolTable />

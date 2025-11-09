@@ -5,7 +5,7 @@ import { actions } from '../../data/reducer.ts';
 import { DialogState } from '../../data/state-types.ts';
 import { AppDispatch } from '../../data/store.ts';
 
-export const MapConfig = () => {
+export const ToolConfig = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   return (

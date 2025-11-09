@@ -11,7 +11,7 @@ import { UserAccountDelete } from './alertDialogs/UserAccountDelete.tsx';
 import { AppBar } from './appBar/AppBar.tsx';
 import { MapActionsRename } from './dialogs/MapActionsRename.tsx';
 import { MapActionsShare } from './dialogs/MapActionsShare.tsx';
-import { MapConfig } from './dialogs/MapConfig.tsx';
+import { ToolConfig } from './dialogs/ToolConfig.tsx';
 import { MapShares } from './dialogs/MapShares.tsx';
 import ReactFlowMap from './map/ReactFlowMap.tsx';
 import { Window } from './window/Window.tsx';
@@ -46,7 +46,7 @@ export const Editor: FC = () => {
           </AlertDialog.Root>
           {dialogState === DialogState.MAP_ACTIONS_RENAME && <MapActionsRename />}
           {dialogState === DialogState.MAP_ACTIONS_SHARE && <MapActionsShare />}
-          {dialogState === DialogState.TOOL_CONFIG && <MapConfig />}
+          {dialogState === DialogState.TOOL_CONFIG && <ToolConfig />}
           {dialogState === DialogState.MAP_SHARES && <MapShares />}
         </Dialog.Root>
       )}
