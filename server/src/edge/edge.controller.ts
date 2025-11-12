@@ -1,32 +1,22 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { DeleteEdgeRequestDto, InsertEdgeRequestDto } from '../../../shared/src/api/api-types-edge';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
 import { EdgeService } from './edge.service';
 
-@injectable()
+@Controller()
 export class EdgeController {
-  public router: Router;
-
-  constructor(private edgeService: EdgeService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly edgeService: EdgeService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/insert-edge', checkJwt, getWorkspaceId, this.insertEdge.bind(this));
-    this.router.post('/delete-edge', checkJwt, getWorkspaceId, this.deleteEdge.bind(this));
-  }
-
-  private async insertEdge(req: Request, res: Response) {
-    const params: InsertEdgeRequestDto = req.body;
+  @Post('insert-edge')
+  @UseGuards(JwtAuthGuard)
+  async insertEdge(@Body() params: InsertEdgeRequestDto) {
     await this.edgeService.insertEdge(params);
-    res.json();
   }
 
-  private async deleteEdge(req: Request, res: Response) {
-    const params: DeleteEdgeRequestDto = req.body;
+  @Post('delete-edge')
+  @UseGuards(JwtAuthGuard)
+  async deleteEdge(@Body() params: DeleteEdgeRequestDto) {
     await this.edgeService.deleteEdge(params);
-    res.json();
   }
 }

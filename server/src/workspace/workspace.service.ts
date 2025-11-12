@@ -1,17 +1,18 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { MapRepository } from '../map/map.repository';
 import { TabRepository } from '../tab/tab.repository';
 import { UserRepository } from '../user/user.repository';
 import { WorkspaceRepository } from './workspace.repository';
 
-@injectable()
+@Injectable()
 export class WorkspaceService {
   constructor(
     private workspaceRepository: WorkspaceRepository,
     private userRepository: UserRepository,
     private mapRepository: MapRepository,
-    private tabRepository: TabRepository
-  ) {}
+    private tabRepository: TabRepository,
+  ) {
+  }
 
   async createWorkspace({ sub }: { sub: string }) {
     const user = await this.userRepository.getUserBySub({ sub });

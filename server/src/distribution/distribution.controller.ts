@@ -1,20 +1,19 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Controller, Get, Param, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { DistributionService } from './distribution.service';
 
-@injectable()
+@Controller()
 export class DistributionController {
-  public router: Router;
-
-  constructor(private distributionService: DistributionService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly distributionService: DistributionService) {
   }
 
-  private initializeRoutes() {
-    this.router.get('/workspace_events/:workspaceId', (req: Request, res: Response) => {
-      const workspaceId = Number(req.params.workspaceId);
-      this.distributionService.addClient(req, res, workspaceId);
-    });
+  @Get('workspace_events/:workspaceId')
+  handleWorkspaceEvents(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('workspaceId') workspaceId: string,
+  ) {
+    const id = Number(workspaceId);
+    this.distributionService.addClient(req, res, id);
   }
 }

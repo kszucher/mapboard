@@ -1,17 +1,18 @@
+import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { createClient } from 'redis';
-import { injectable } from 'tsyringe';
 import { SSE_EVENT, SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 
-@injectable()
+@Injectable()
 export class DistributionService {
   private publisher?: any;
   private subscriber?: any;
   private clients = new Map<string, { res: Response }>();
   private readonly channel = 'workspace_updates';
 
-  constructor(private workspaceRepository: WorkspaceRepository) {}
+  constructor(private workspaceRepository: WorkspaceRepository) {
+  }
 
   async connectAndSubscribe() {
     this.publisher = createClient({ url: process.env.REDIS_MAIN! });

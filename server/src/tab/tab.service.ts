@@ -1,18 +1,19 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { DistributionService } from '../distribution/distribution.service';
 import { MapRepository } from '../map/map.repository';
 import { UserRepository } from '../user/user.repository';
 import { TabRepository } from './tab.repository';
 
-@injectable()
+@Injectable()
 export class TabService {
   constructor(
     private tabRepository: TabRepository,
     private userRepository: UserRepository,
     private mapRepository: MapRepository,
-    private distributionService: DistributionService
-  ) {}
+    private distributionService: DistributionService,
+  ) {
+  }
 
   async getOrderedMapsOfTab({ sub }: { sub: string }) {
     const user = await this.userRepository.getUserBySub({ sub });

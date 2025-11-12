@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { getTopologicalSort } from '../../../shared/src/algorithms/topological-sort';
 import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { M, ShareAccess } from '../../../shared/src/schema/schema';
@@ -11,7 +11,7 @@ import { UserRepository } from '../user/user.repository';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { MapRepository } from './map.repository';
 
-@injectable()
+@Injectable()
 export class MapService {
   constructor(
     private userRepository: UserRepository,
@@ -21,8 +21,9 @@ export class MapService {
     private tabRepository: TabRepository,
     private shareRepository: ShareRepository,
     private workspaceRepository: WorkspaceRepository,
-    private distributionService: DistributionService
-  ) {}
+    private distributionService: DistributionService,
+  ) {
+  }
 
   async getWorkspaceMapInfo({ workspaceId }: { workspaceId: number }): Promise<{
     id: number;
@@ -44,9 +45,9 @@ export class MapService {
       workspace.userId === map.userId
         ? ShareAccess.EDIT
         : await this.shareRepository.getShareAccess({
-            shareUserId: workspace.userId,
-            mapId: map.id,
-          });
+          shareUserId: workspace.userId,
+          mapId: map.id,
+        });
 
     return {
       id: map.id,
@@ -56,11 +57,7 @@ export class MapService {
     };
   }
 
-  private async createMapCommon({
-    userId,
-    workspaceId,
-    mapId,
-  }: {
+  private async createMapCommon({ userId, workspaceId, mapId }: {
     userId: number;
     workspaceId: number;
     mapId: number;

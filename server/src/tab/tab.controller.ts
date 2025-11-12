@@ -1,44 +1,42 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import {
   GetTabInfoQueryResponseDto,
   MoveDownMapInTabRequestDto,
   MoveUpMapInTabRequestDto,
 } from '../../../shared/src/api/api-types-tab';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
 import { TabService } from './tab.service';
 
-@injectable()
+@Controller()
 export class TabController {
-  public router: Router;
-
-  constructor(private tabService: TabService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly tabService: TabService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/get-tab-info', checkJwt, getWorkspaceId, this.getTabInfo.bind(this));
-    this.router.post('/move-up-map-in-tab', checkJwt, getWorkspaceId, this.moveUpMap.bind(this));
-    this.router.post('/move-down-map-in-tab', checkJwt, getWorkspaceId, this.moveDownMap.bind(this));
+  @Post('get-tab-info')
+  @UseGuards(JwtAuthGuard)
+  async getTabInfo(@Req() req: Request): Promise<GetTabInfoQueryResponseDto> {
+    const sub = req.auth?.payload?.sub ?? '';
+    return this.tabService.getOrderedMapsOfTab({ sub });
   }
 
-  private async getTabInfo(req: Request, res: Response) {
-    const response: GetTabInfoQueryResponseDto = await this.tabService.getOrderedMapsOfTab({
-      sub: req.auth?.payload.sub ?? '',
-    });
-    res.json(response);
+  @Post('move-up-map-in-tab')
+  @UseGuards(JwtAuthGuard)
+  async moveUpMap(
+    @Req() req: Request,
+    @Body() params: MoveUpMapInTabRequestDto,
+  ) {
+    const sub = req.auth?.payload?.sub ?? '';
+    await this.tabService.moveUpMapInTab({ sub, mapId: params.mapId });
   }
 
-  private async moveUpMap(req: Request, res: Response) {
-    const { mapId }: MoveUpMapInTabRequestDto = req.body;
-    await this.tabService.moveUpMapInTab({ sub: req.auth?.payload.sub ?? '', mapId });
-    res.json();
-  }
-
-  private async moveDownMap(req: Request, res: Response) {
-    const { mapId }: MoveDownMapInTabRequestDto = req.body;
-    await this.tabService.moveDownMapInTab({ sub: req.auth?.payload.sub ?? '', mapId });
-    res.json();
+  @Post('move-down-map-in-tab')
+  @UseGuards(JwtAuthGuard)
+  async moveDownMap(
+    @Req() req: Request,
+    @Body() params: MoveDownMapInTabRequestDto,
+  ) {
+    const sub = req.auth?.payload?.sub ?? '';
+    await this.tabService.moveDownMapInTab({ sub, mapId: params.mapId });
   }
 }

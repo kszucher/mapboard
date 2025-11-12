@@ -1,9 +1,10 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 
-@injectable()
+@Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository) {
+  }
 
   async getUserBySub({ sub }: { sub: string }) {
     return this.userRepository.getUserBySub({ sub });

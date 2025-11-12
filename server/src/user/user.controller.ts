@@ -1,28 +1,22 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { GetUserInfoQueryResponseDto } from '../../../shared/src/api/api-types-user';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
 import { UserService } from './user.service';
 
-@injectable()
+@Controller()
 export class UserController {
-  public router: Router;
-
-  constructor(private userService: UserService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly userService: UserService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/get-user-info', checkJwt, getWorkspaceId, this.getUserInfo.bind(this));
-    // TODO: toggleColorMode
-    // TODO: deleteAccount
+  @Post('get-user-info')
+  @UseGuards(JwtAuthGuard)
+  async getUserInfo(@Req() req: Request): Promise<GetUserInfoQueryResponseDto> {
+    const sub = req.auth?.payload.sub ?? '';
+    const user = await this.userService.getUserBySub({ sub });
+    return { userInfo: user };
   }
 
-  private async getUserInfo(req: Request, res: Response) {
-    const user = await this.userService.getUserBySub({ sub: req.auth?.payload.sub ?? '' });
-
-    const response: GetUserInfoQueryResponseDto = { userInfo: user };
-    res.json(response);
-  }
+  // TODO: toggleColorMode
+  // TODO: deleteAccount
 }

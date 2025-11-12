@@ -1,9 +1,10 @@
-import { injectable } from 'tsyringe';
-import { PrismaClient } from '../generated/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-@injectable()
+@Injectable()
 export class UserRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {
+  }
 
   async getUserBySub({ sub }: { sub: string }) {
     return this.prisma.user.findFirstOrThrow({

@@ -1,9 +1,11 @@
-import { injectable } from 'tsyringe';
-import { Prisma, PrismaClient } from '../generated/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '../generated/client';
+import { PrismaService } from '../prisma/prisma.service';
 
-@injectable()
+@Injectable()
 export class EdgeRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {
+  }
 
   private edgeInclude = (<T extends Prisma.EdgeInclude>(obj: T) => obj)({
     FromNode: {

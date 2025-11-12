@@ -1,5 +1,4 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import {
   CreateMapInTabDuplicateRequestDto,
   CreateMapInTabRequestDto,
@@ -8,63 +7,67 @@ import {
   GetMapInfoQueryResponseDto,
   RenameMapRequestDto,
 } from '../../../shared/src/api/api-types-map';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
+import { WorkspaceId } from '../workspace-id.decorator';
 import { MapService } from './map.service';
 
-@injectable()
+@Controller()
 export class MapController {
-  public router: Router;
-
-  constructor(private mapService: MapService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly mapService: MapService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/get-map-info', checkJwt, getWorkspaceId, this.getMapInfo.bind(this));
-    this.router.post('/create-map-in-tab', checkJwt, getWorkspaceId, this.createMapInTab.bind(this));
-    this.router.post('/create-map-in-tab-duplicate', checkJwt, getWorkspaceId, this.createMapInTabDuplicate.bind(this));
-    this.router.post('/rename-map', checkJwt, getWorkspaceId, this.renameMap.bind(this));
-    this.router.post('/execute-map', checkJwt, getWorkspaceId, this.executeMap.bind(this));
-    this.router.post('/delete-map', checkJwt, getWorkspaceId, this.deleteMap.bind(this));
+  @Post('get-map-info')
+  @UseGuards(JwtAuthGuard)
+  async getMapInfo(@WorkspaceId() workspaceId: number): Promise<GetMapInfoQueryResponseDto> {
+    return this.mapService.getWorkspaceMapInfo({ workspaceId });
   }
 
-  private async getMapInfo(req: Request, res: Response) {
-    const { workspaceId } = req as any;
-    const response: GetMapInfoQueryResponseDto = await this.mapService.getWorkspaceMapInfo({ workspaceId });
-    res.json(response);
+  @Post('create-map-in-tab')
+  @UseGuards(JwtAuthGuard)
+  async createMapInTab(
+    @WorkspaceId() workspaceId: number,
+    @Body() params: CreateMapInTabRequestDto,
+    @Body('sub') sub: string,
+  ) {
+    await this.mapService.createMapInTabNew({
+      sub,
+      workspaceId,
+      ...params,
+    });
   }
 
-  private async createMapInTab(req: Request, res: Response) {
-    const { workspaceId } = req as any;
-    const params: CreateMapInTabRequestDto = req.body;
-    await this.mapService.createMapInTabNew({ sub: req.auth?.payload.sub ?? '', workspaceId, ...params });
-    res.json();
+  @Post('create-map-in-tab-duplicate')
+  @UseGuards(JwtAuthGuard)
+  async createMapInTabDuplicate(
+    @WorkspaceId() workspaceId: number,
+    @Body() params: CreateMapInTabDuplicateRequestDto,
+    @Body('sub') sub: string,
+  ) {
+    await this.mapService.createMapInTabDuplicate({
+      sub,
+      workspaceId,
+      ...params,
+    });
   }
 
-  private async createMapInTabDuplicate(req: Request, res: Response) {
-    const { workspaceId } = req as any;
-    const params: CreateMapInTabDuplicateRequestDto = req.body;
-    await this.mapService.createMapInTabDuplicate({ sub: req.auth?.payload.sub ?? '', workspaceId, ...params });
-    res.json();
-  }
-
-  private async renameMap(req: Request, res: Response) {
-    const params: RenameMapRequestDto = req.body;
+  @Post('rename-map')
+  @UseGuards(JwtAuthGuard)
+  async renameMap(@Body() params: RenameMapRequestDto) {
     await this.mapService.renameMap(params);
-    res.json();
   }
 
-  private async executeMap(req: Request, res: Response) {
-    const { workspaceId } = req as any;
-    const params: ExecuteMapRequestDto = req.body;
+  @Post('execute-map')
+  @UseGuards(JwtAuthGuard)
+  async executeMap(
+    @WorkspaceId() workspaceId: number,
+    @Body() params: ExecuteMapRequestDto,
+  ) {
     await this.mapService.executeMap({ workspaceId, ...params });
-    res.json();
   }
 
-  private async deleteMap(req: Request, res: Response) {
-    const params: DeleteMapRequestDto = req.body;
-    await this.mapService.deleteMap({ sub: req.auth?.payload.sub ?? '', ...params });
-    res.json();
+  @Post('delete-map')
+  @UseGuards(JwtAuthGuard)
+  async deleteMap(@Body() params: DeleteMapRequestDto, @Body('sub') sub: string) {
+    await this.mapService.deleteMap({ sub, ...params });
   }
 }

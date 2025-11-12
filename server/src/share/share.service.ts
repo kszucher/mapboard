@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import {
   AcceptShareRequestDto,
@@ -12,14 +12,15 @@ import { UserRepository } from '../user/user.repository';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { ShareRepository } from './share.repository';
 
-@injectable()
+@Injectable()
 export class ShareService {
   constructor(
     private shareRepository: ShareRepository,
     private userRepository: UserRepository,
     private workspaceRepository: WorkspaceRepository,
-    private distributionService: DistributionService
-  ) {}
+    private distributionService: DistributionService,
+  ) {
+  }
 
   async getShareInfo({ sub }: { sub: string }) {
     const user = await this.userRepository.getUserBySub({ sub });

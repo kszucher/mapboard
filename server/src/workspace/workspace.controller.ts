@@ -1,33 +1,30 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { CreateWorkspaceResponseDto, UpdateWorkspaceMapRequestDto } from '../../../shared/src/api/api-types-workspace';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
+import { WorkspaceId } from '../workspace-id.decorator';
 import { WorkspaceService } from './workspace.service';
 
-@injectable()
+@Controller()
 export class WorkspaceController {
-  public router: Router;
-
-  constructor(private workspaceService: WorkspaceService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly workspaceService: WorkspaceService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/create-workspace', checkJwt, this.createWorkspace.bind(this));
-    this.router.post('/update-workspace-map', checkJwt, getWorkspaceId, this.updateWorkspaceMap.bind(this));
+  @Post('create-workspace')
+  @UseGuards(JwtAuthGuard)
+  async createWorkspace(@Req() req: Request): Promise<CreateWorkspaceResponseDto> {
+    const sub = req.auth?.payload.sub ?? '';
+    const workspace = await this.workspaceService.createWorkspace({ sub });
+    return { workspaceId: workspace.id };
   }
 
-  private async createWorkspace(req: Request, res: Response) {
-    const workspace = await this.workspaceService.createWorkspace({ sub: req.auth?.payload.sub ?? '' });
-    const response: CreateWorkspaceResponseDto = { workspaceId: workspace.id };
-    res.json(response);
-  }
-
-  private async updateWorkspaceMap(req: Request, res: Response) {
-    const { workspaceId } = req as any;
-    const { mapId }: UpdateWorkspaceMapRequestDto = req.body;
+  @Post('update-workspace-map')
+  @UseGuards(JwtAuthGuard)
+  async updateWorkspaceMap(
+    @Body() params: UpdateWorkspaceMapRequestDto,
+    @WorkspaceId() workspaceId: number,
+  ) {
+    const { mapId } = params;
     await this.workspaceService.updateWorkspaceMap({ workspaceId, mapId });
-    res.json();
   }
 }

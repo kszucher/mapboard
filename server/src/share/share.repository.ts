@@ -1,9 +1,11 @@
-import { injectable } from 'tsyringe';
-import { PrismaClient, ShareAccess, ShareStatus } from '../generated/client';
+import { Injectable } from '@nestjs/common';
+import { ShareAccess, ShareStatus } from '../generated/client';
+import { PrismaService } from '../prisma/prisma.service';
 
-@injectable()
+@Injectable()
 export class ShareRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {
+  }
 
   async getShareInfo({ userId }: { userId: number }) {
     return this.prisma.user.findFirstOrThrow({
@@ -83,11 +85,11 @@ export class ShareRepository {
   }
 
   async createShare({
-    userId,
-    mapId,
-    shareEmail,
-    shareAccess,
-  }: {
+                      userId,
+                      mapId,
+                      shareEmail,
+                      shareAccess,
+                    }: {
     userId: number;
     mapId: number;
     shareEmail: string;

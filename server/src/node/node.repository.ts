@@ -1,9 +1,11 @@
-import { injectable } from 'tsyringe';
-import { Prisma, PrismaClient } from '../generated/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '../generated/client';
+import { PrismaService } from '../prisma/prisma.service';
 
-@injectable()
+@Injectable()
 export class NodeRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {
+  }
 
   async getNodes({ mapId }: { mapId: number }) {
     return this.prisma.node.findMany({
@@ -36,11 +38,7 @@ export class NodeRepository {
     });
   }
 
-  async updateNode({
-    nodeId,
-    workspaceId,
-    params,
-  }: {
+  async updateNode({ nodeId, workspaceId, params }: {
     nodeId: number;
     workspaceId: number;
     params: Prisma.NodeUncheckedUpdateInput;

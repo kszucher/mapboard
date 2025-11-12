@@ -1,11 +1,14 @@
 {
   "dependencies": {
+    "@mastra/core": "^0.24.0",
     "dotenv": "^17.2.1",
-    "mastra": "^0.17.5"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  }
+  },
+  "type": "module"
 }
+

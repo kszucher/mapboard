@@ -1,31 +1,22 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateToolRequestDto, GetToolQueryResponseDto } from '../../../shared/src/api/api-types-tool';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
 import { ToolService } from './tool.service';
 
-@injectable()
+@Controller()
 export class ToolController {
-  public router: Router;
-
-  constructor(private toolService: ToolService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly toolService: ToolService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/get-tool-info', checkJwt, getWorkspaceId, this.getToolInfo.bind(this));
-    this.router.post('/create-tool', checkJwt, getWorkspaceId, this.createTool.bind(this));
+  @Post('get-tool-info')
+  @UseGuards(JwtAuthGuard)
+  async getToolInfo(): Promise<GetToolQueryResponseDto> {
+    return this.toolService.getTool();
   }
 
-  private async getToolInfo(req: Request, res: Response) {
-    const response: GetToolQueryResponseDto = await this.toolService.getTool();
-    res.json(response);
-  }
-
-  private async createTool(req: Request, res: Response) {
-    const params: CreateToolRequestDto = req.body;
+  @Post('create-tool')
+  @UseGuards(JwtAuthGuard)
+  async createTool(@Body() params: CreateToolRequestDto) {
     await this.toolService.createTool();
-    res.json();
   }
 }

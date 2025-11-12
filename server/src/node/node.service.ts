@@ -1,16 +1,17 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { SSE_EVENT_TYPE } from '../../../shared/src/api/api-types-distribution';
 import { DistributionService } from '../distribution/distribution.service';
 import { EdgeRepository } from '../edge/edge.repository';
 import { NodeRepository } from './node.repository';
 
-@injectable()
+@Injectable()
 export class NodeService {
   constructor(
     private nodeRepository: NodeRepository,
     private edgeRepository: EdgeRepository,
-    private distributionService: DistributionService
-  ) {}
+    private distributionService: DistributionService,
+  ) {
+  }
 
   async insertNode({ mapId, toolId }: { mapId: number; toolId: number }) {
     const node = await this.nodeRepository.createNode({ mapId, toolId });
@@ -21,13 +22,7 @@ export class NodeService {
     });
   }
 
-  async moveNode({
-    workspaceId,
-    mapId,
-    nodeId,
-    offsetX,
-    offsetY,
-  }: {
+  async moveNode({ workspaceId, mapId, nodeId, offsetX, offsetY }: {
     mapId: number;
     nodeId: number;
     offsetX: number;

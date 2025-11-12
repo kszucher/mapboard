@@ -1,9 +1,10 @@
-import { injectable } from 'tsyringe';
-import { PrismaClient } from '../generated/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
-@injectable()
+@Injectable()
 export class ToolRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {
+  }
 
   async getTool() {
     return this.prisma.tool.findMany({
@@ -21,5 +22,6 @@ export class ToolRepository {
     // TODO
   }
 
-  async removeTool() {}
+  async removeTool() {
+  }
 }

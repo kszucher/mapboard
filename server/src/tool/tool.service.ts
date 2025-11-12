@@ -1,9 +1,10 @@
-import { injectable } from 'tsyringe';
+import { Injectable } from '@nestjs/common';
 import { ToolRepository } from './tool.repository';
 
-@injectable()
+@Injectable()
 export class ToolService {
-  constructor(private toolRepository: ToolRepository) {}
+  constructor(private toolRepository: ToolRepository) {
+  }
 
   async getTool() {
     return this.toolRepository.getTool();

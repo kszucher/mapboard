@@ -1,5 +1,5 @@
-import { Request, Response, Router } from 'express';
-import { injectable } from 'tsyringe';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import {
   AcceptShareRequestDto,
   CreateShareRequestDto,
@@ -8,66 +8,49 @@ import {
   RejectShareRequestDto,
   WithdrawShareRequestDto,
 } from '../../../shared/src/api/api-types-share';
-import { checkJwt, getWorkspaceId } from '../middleware';
+import { JwtAuthGuard } from '../check-jwt.guard';
 import { ShareService } from './share.service';
 
-@injectable()
+@Controller()
 export class ShareController {
-  public router: Router;
-
-  constructor(private shareService: ShareService) {
-    this.router = Router();
-    this.initializeRoutes();
+  constructor(private readonly shareService: ShareService) {
   }
 
-  private initializeRoutes() {
-    this.router.post('/get-share-info', checkJwt, getWorkspaceId, this.getShareInfo.bind(this));
-    this.router.post('/create-share', checkJwt, getWorkspaceId, this.createShare.bind(this));
-    this.router.post('/accept-share', checkJwt, getWorkspaceId, this.acceptShare.bind(this));
-    this.router.post('/withdraw-share', checkJwt, getWorkspaceId, this.withdrawShare.bind(this));
-    this.router.post('/reject-share', checkJwt, getWorkspaceId, this.rejectShare.bind(this));
-    this.router.post('/modify-share-access', checkJwt, getWorkspaceId, this.modifyShareAccess.bind(this));
+  @Post('get-share-info')
+  @UseGuards(JwtAuthGuard)
+  async getShareInfo(@Req() req: Request): Promise<GetShareInfoQueryResponseDto> {
+    const sub = req.auth?.payload?.sub ?? '';
+    return this.shareService.getShareInfo({ sub });
   }
 
-  private async getShareInfo(req: Request, res: Response) {
-    const response: GetShareInfoQueryResponseDto = await this.shareService.getShareInfo({
-      sub: req.auth?.payload.sub ?? '',
-    });
-    res.json(response);
+  @Post('create-share')
+  @UseGuards(JwtAuthGuard)
+  async createShare(@Req() req: Request, @Body() params: CreateShareRequestDto) {
+    const sub = req.auth?.payload?.sub ?? '';
+    await this.shareService.createShare({ sub, ...params });
   }
 
-  private async createShare(req: Request, res: Response) {
-    const { mapId, shareEmail, shareAccess }: CreateShareRequestDto = req.body;
-    await this.shareService.createShare({
-      sub: req.auth?.payload.sub ?? '',
-      mapId,
-      shareEmail,
-      shareAccess,
-    });
-    res.json();
+  @Post('accept-share')
+  @UseGuards(JwtAuthGuard)
+  async acceptShare(@Body() params: AcceptShareRequestDto) {
+    await this.shareService.acceptShare(params);
   }
 
-  private async acceptShare(req: Request, res: Response) {
-    const { shareId }: AcceptShareRequestDto = req.body;
-    await this.shareService.acceptShare({ shareId });
-    res.json();
+  @Post('withdraw-share')
+  @UseGuards(JwtAuthGuard)
+  async withdrawShare(@Body() params: WithdrawShareRequestDto) {
+    await this.shareService.withdrawShare(params);
   }
 
-  private async withdrawShare(req: Request, res: Response) {
-    const { shareId }: WithdrawShareRequestDto = req.body;
-    await this.shareService.withdrawShare({ shareId });
-    res.json();
+  @Post('reject-share')
+  @UseGuards(JwtAuthGuard)
+  async rejectShare(@Body() params: RejectShareRequestDto) {
+    await this.shareService.rejectShare(params);
   }
 
-  private async rejectShare(req: Request, res: Response) {
-    const { shareId }: RejectShareRequestDto = req.body;
-    await this.shareService.rejectShare({ shareId });
-    res.json();
-  }
-
-  private async modifyShareAccess(req: Request, res: Response) {
-    const { shareId, shareAccess }: ModifyShareAccessRequestDto = req.body;
-    await this.shareService.modifyShareAccess({ shareId, shareAccess });
-    res.json();
+  @Post('modify-share-access')
+  @UseGuards(JwtAuthGuard)
+  async modifyShareAccess(@Body() params: ModifyShareAccessRequestDto) {
+    await this.shareService.modifyShareAccess(params);
   }
 }
