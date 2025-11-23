@@ -1,6 +1,6 @@
 import { Dialog, DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
-import TriangleSquareCircle from '../../../assets/triangle-square-circle.svg?react';
+import TriangleSquareCircle from '../../assets/triangle-square-circle.svg?react';
 import { actions } from '../../data/reducer.ts';
 import { DialogState } from '../../data/state-types.ts';
 import { AppDispatch } from '../../data/store.ts';

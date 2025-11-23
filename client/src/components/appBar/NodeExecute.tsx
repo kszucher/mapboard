@@ -1,7 +1,7 @@
 import { IconButton } from '@radix-ui/themes';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTopologicalSort } from '../../../../shared/src/algorithms/topological-sort.ts';
-import PlayerPlay from '../../../assets/player-play.svg?react';
+import PlayerPlay from '../../assets/player-play.svg?react';
 import { api, useGetMapInfoQuery } from '../../data/api.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';
 

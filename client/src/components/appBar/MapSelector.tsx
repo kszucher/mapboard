@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { ShareStatus } from '../../../../shared/src/schema/schema.ts';
-import ChevronDown from '../../../assets/chevron-down.svg?react';
+import ChevronDown from '../../assets/chevron-down.svg?react';
 import { api, useGetMapInfoQuery, useGetShareInfoQuery, useGetTabInfoQuery } from '../../data/api.ts';
 import { AppDispatch } from '../../data/store.ts';
 import { MapActions } from './MapActions.tsx';

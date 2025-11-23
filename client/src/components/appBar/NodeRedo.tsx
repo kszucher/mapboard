@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { ShareAccess } from '../../../../shared/src/schema/schema.ts';
-import ArrowForwardUp from '../../../assets/arrow-forward-up.svg?react';
+import ArrowForwardUp from '../../assets/arrow-forward-up.svg?react';
 import { useGetMapInfoQuery, useGetShareInfoQuery } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AppDispatch, RootState } from '../../data/store.ts';

@@ -1,6 +1,6 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
-import Plus from '../../../assets/plus.svg?react';
+import Plus from '../../assets/plus.svg?react';
 import { api, useGetMapInfoQuery, useGetToolInfoQuery } from '../../data/api.ts';
 import { AppDispatch } from '../../data/store.ts';
 

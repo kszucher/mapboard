@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { AlertDialog, Dialog, DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
-import User from '../../../assets/user.svg?react';
+import User from '../../assets/user.svg?react';
 import { api } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { AlertDialogState, DialogState } from '../../data/state-types.ts';

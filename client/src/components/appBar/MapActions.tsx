@@ -1,6 +1,6 @@
 import { Dialog, DropdownMenu, IconButton } from '@radix-ui/themes';
 import { useDispatch } from 'react-redux';
-import Dots from '../../../assets/dots.svg?react';
+import Dots from '../../assets/dots.svg?react';
 import { api, useGetMapInfoQuery, useGetShareInfoQuery } from '../../data/api.ts';
 import { actions } from '../../data/reducer.ts';
 import { DialogState } from '../../data/state-types.ts';

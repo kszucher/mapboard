@@ -1,7 +1,7 @@
 import { Badge, Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useDispatch } from 'react-redux';
-import Dots from '../../../assets/dots.svg?react';
+import Dots from '../../assets/dots.svg?react';
 import { api, useGetMapInfoQuery } from '../../data/api.ts';
 import { AppDispatch } from '../../data/store.ts';
 import { AppFlowNode } from './types.ts';

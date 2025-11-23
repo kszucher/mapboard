@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import TopologyStar from '../../../assets/topology-star.svg?react';
+import TopologyStar from '../../assets/topology-star.svg?react';
 
 export const Logo: FC = () => {
   return (
