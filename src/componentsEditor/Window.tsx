@@ -1,10 +1,9 @@
 import {FC, useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {api, useOpenWorkspaceQuery} from "../api/Api.ts"
-import {defaultUseOpenWorkspaceQueryState} from "../apiState/ApiState.ts"
+import {api} from "../api/Api.ts"
 import {AppDispatch, RootState} from "../appStore/appStore.ts"
 import {shortcutColors} from "../consts/Colors.ts"
-import {AccessType, AlertDialogState, DialogState, MidMouseMode, PageState} from "../consts/Enums.ts"
+import {DialogState, MidMouseMode} from "../consts/Enums.ts"
 import {actions} from "../editorMutations/EditorMutations.ts"
 import {getMap, mSelector} from "../editorQueries/EditorQueries.ts"
 import {getRD, getRL, getRR, getRU} from "../mapQueries/MapFindNearestR.ts"
@@ -38,16 +37,13 @@ let midMouseListener: AbortController
 
 export const Window: FC = () => {
   const midMouseMode = useSelector((state: RootState) => state.editor.midMouseMode)
-  const pageState = useSelector((state: RootState) => state.editor.pageState)
   const dialogState = useSelector((state: RootState) => state.editor.dialogState)
-  const alertDialogState = useSelector((state: RootState) => state.editor.alertDialogState)
   const commitList = useSelector((state: RootState) => state.editor.commitList)
-  const m = (useSelector((state:RootState) => mSelector(state)))
+  const m = useSelector((state:RootState) => mSelector(state))
   const mExists = m && Object.keys(m).length
   const editedNodeId = useSelector((state: RootState) => state.editor.editedNodeId)
-  const {data} = useOpenWorkspaceQuery()
-  const {access} = data || defaultUseOpenWorkspaceQueryState
   const dispatch = useDispatch<AppDispatch>()
+
   const keydown = (e: KeyboardEvent) => {
     if (
       +e.ctrlKey && e.code === 'KeyD' ||
@@ -57,8 +53,10 @@ export const Window: FC = () => {
       e.which < 48 ||
       e.key === 'F1' ||
       e.key === 'F3'
-    ) {e.preventDefault()
+    ) {
+      e.preventDefault()
     }
+
     const m = getMap()
     const ckm = [
       +e.ctrlKey ? 'c' : '-',
@@ -168,8 +166,12 @@ export const Window: FC = () => {
     if (ckm === '--a' && e.code === 'ArrowLeft' && isAXCC(m)) dispatch(actions.insertCCL())
 
     if (ckm === 'c--' && e.which >= 96 && e.which <= 105 && isAXS(m)) dispatch(actions.setTextColor(shortcutColors[e.which - 96]))
-    if (ckm === '---' && e.which >= 48 && ![91,92,93].includes(e.which) && e.key !== 'F2' && isAXS(m) && getXS(m).contentType === 'text' && getXS(m).co1.length === 0 &&(m)) dispatch(actions.startEditReplace())
-    if (ckm === '-s-' && e.which >= 48 && ![91,92,93].includes(e.which) && e.key !== 'F2' && isAXS(m) && getXS(m).contentType === 'text' && getXS(m).co1.length === 0 &&(m)) dispatch(actions.startEditReplace())
+    if (ckm === '---' && e.which >= 48 && ![91,92,93].includes(e.which) && e.key !== 'F2' && isAXS(m) && getXS(m).contentType === 'text' && getXS(m).co1.length === 0) dispatch(actions.startEditReplace())
+    if (ckm === '-s-' && e.which >= 48 && ![91,92,93].includes(e.which) && e.key !== 'F2' && isAXS(m) && getXS(m).contentType === 'text' && getXS(m).co1.length === 0) dispatch(actions.startEditReplace())
+  }
+
+  const mouseup = () => {
+    dispatch(actions.clearConnectionStart())
   }
 
   const paste = (e: Event) => {
@@ -180,80 +182,58 @@ export const Window: FC = () => {
         navigator.clipboard.read().then(item => {
           const type = item[0].types[0]
           if (type === 'text/plain') {
-            navigator.clipboard.readText()
-              .then(text => {
-                let isValidJson = true
-                try { JSON.parse(text) } catch { isValidJson = false }
-                if (isValidJson) {
-                  const mapJson = JSON.parse(text)
-                  const isValidMap = Array.isArray(mapJson) && mapJson.length && mapJson.every(el =>
-                    Object.hasOwn(el, 'path') && Array.isArray(el.path) &&
-                    Object.hasOwn(el, 'nodeId') && typeof el.nodeId === 'string'
-                  )
-                  if (isValidMap) {
-                    const isPastedLR = ['r', 'l'].includes(mapJson.at(-1).path.at(0))
-                    const isPastedS = mapJson.at(-1).path.at(0) === 's'
-                    if (isAXR(m)) {
-                      if (isPastedLR) dispatch(actions.pasteLR(text))
-                      if (isPastedS) dispatch(actions.pasteRSO(text))
-                    } else if (isAXS(m)) {
-                      const hasCell = (mapJson as M).some(el => el.path.includes('c'))
-                      if (hasCell && !getXS(m).path.includes('c') || !hasCell) {
-                        if (isPastedS) dispatch(actions.pasteSSO(text))
-                      }
-                    } else if (isAXC1(m)) {
-                      if (isPastedS) dispatch(actions.pasteCSO(text))
-                    } else if (isAXCC(m)) {
-                      // do nothing
-                    } else if (isAXCR(m)) {
-                      // do nothing
-                    } else {
-                      if (isPastedLR) dispatch(actions.pasteLR(text))
+            navigator.clipboard.readText().then(text => {
+              let isValidJson = true
+              try {
+                JSON.parse(text)
+              } catch {
+                isValidJson = false
+              }
+              if (isValidJson) {
+                const mapJson = JSON.parse(text)
+                const isValidMap = Array.isArray(mapJson) && mapJson.length && mapJson.every(el =>
+                  Object.hasOwn(el, 'path') && Array.isArray(el.path) &&
+                  Object.hasOwn(el, 'nodeId') && typeof el.nodeId === 'string'
+                )
+                if (isValidMap) {
+                  const isPastedLR = ['r', 'l'].includes(mapJson.at(-1).path.at(0))
+                  const isPastedS = mapJson.at(-1).path.at(0) === 's'
+                  if (isAXR(m)) {
+                    if (isPastedLR) dispatch(actions.pasteLR(text))
+                    if (isPastedS) dispatch(actions.pasteRSO(text))
+                  } else if (isAXS(m)) {
+                    const hasCell = (mapJson as M).some(el => el.path.includes('c'))
+                    if (hasCell && !getXS(m).path.includes('c') || !hasCell) {
+                      if (isPastedS) dispatch(actions.pasteSSO(text))
                     }
-                  } else {
-                    window.alert('invalid componentsMap')
+                  } else if (isAXC1(m)) {
+                    if (isPastedS) dispatch(actions.pasteCSO(text))
+                  } else if (!isAXCC(m) && !isAXCR(m)) {
+                    if (isPastedLR) dispatch(actions.pasteLR(text))
                   }
                 } else {
-                  if (isUrl(text)) {
-                    if (isAXS(m)) dispatch(actions.insertSSO(), {
-                      contentType: 'text',
-                      content: text,
-                      linkType: 'external',
-                      link: text
-                    })
-                  } else {
-                    if( isAXS(m)) dispatch(actions.insertSSO(), {
-                      contentType: 'text',
-                      content: text
-                    })
-                  }
+                  window.alert('invalid componentsMap')
                 }
-              })
-          } else if (type === 'image/png') {
-            item[0].getType('image/png').then(image => {
-              const formData = new FormData()
-              formData.append('upl', image, 'image.png')
-              const address = process.env.NODE_ENV === 'development'
-                ? 'http://127.0.0.1:8082/feta'
-                : 'https://mapboard-server.herokuapp.com/feta'
-              fetch(address, {method: 'post', body: formData})
-                .then(response => response.json().then(response => {
+              } else {
+                if (isUrl(text)) {
                   if (isAXS(m)) dispatch(actions.insertSSO(), {
-                    contentType: 'image',
-                    content: response.imageId,
-                    imageW: response.imageSize.width,
-                    imageH: response.imageSize.height
+                    contentType: 'text',
+                    content: text,
+                    linkType: 'external',
+                    link: text
                   })
-                }))
+                } else {
+                  if (isAXS(m)) dispatch(actions.insertSSO(), {
+                    contentType: 'text',
+                    content: text
+                  })
+                }
+              }
             })
           }
         })
       }
     })
-  }
-
-  const mouseup = () => {
-    dispatch(actions.clearConnectionStart())
   }
 
   const contextmenu = (e: MouseEvent) => {
@@ -265,44 +245,30 @@ export const Window: FC = () => {
   }
 
   useEffect(() => {
-    if (
-      pageState === PageState.WS &&
-      dialogState === DialogState.NONE &&
-      alertDialogState === AlertDialogState.NONE &&
-      access === AccessType.EDIT &&
-      editedNodeId === ''
-    ) {
-      console.log('WINDOW EVENT LISTENERS ADDED')
+    if (dialogState === DialogState.NONE && editedNodeId === '') {
       mapListener = new AbortController()
       const {signal} = mapListener
       window.addEventListener("keydown", keydown, {signal})
       window.addEventListener("paste", paste, {signal})
       window.addEventListener("mouseup", mouseup, {signal})
       window.addEventListener("contextmenu", contextmenu, {signal})
-    } else {
-      console.log('WINDOW EVENT LISTENERS REMOVED')
-      if (mapListener) {
-        mapListener.abort()
-      }
+    } else if (mapListener) {
+      mapListener.abort()
     }
     return () => {
       if (mapListener) {
         mapListener.abort()
       }
     }
-  }, [pageState, dialogState, alertDialogState, access, editedNodeId])
+  }, [dialogState, editedNodeId])
 
   useEffect(() => {
     if (midMouseMode === MidMouseMode.ZOOM) {
-      console.log('MID MOUSE PREVENTION ADDED')
       midMouseListener = new AbortController()
       const {signal} = midMouseListener
       window.addEventListener("wheel", wheel, {signal, passive: false})
-    } else {
-      console.log('MID MOUSE PREVENTION REMOVED')
-      if (midMouseListener) {
-        midMouseListener.abort()
-      }
+    } else if (midMouseListener) {
+      midMouseListener.abort()
     }
     return () => {
       if (midMouseListener) {
@@ -312,15 +278,11 @@ export const Window: FC = () => {
   }, [midMouseMode])
 
   useEffect(() => {
-    if (mExists) {
-      if (commitList.length > 1) {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => dispatch(api.endpoints.saveMap.initiate()), 1000)
-      }
+    if (mExists && commitList.length > 1) {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => dispatch(api.endpoints.saveMap.initiate()), 1000)
     }
   }, [m])
 
-  return (
-    <></>
-  )
+  return <></>
 }

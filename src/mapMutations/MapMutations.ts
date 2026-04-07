@@ -203,8 +203,6 @@ export const mapMutations = {
   offsetL: (m: M) => Object.assign(getXR(m), { offsetW: getXR(m).offsetW -= 20 }),
   offsetRByDrag: (m: M, rOffsetCoords: number[]) => Object.assign(getXR(m), { offsetW: rOffsetCoords[0], offsetH: rOffsetCoords[1] }),
   setControlTypeNone: (m: M) => Object.assign(getXR(m), { controlType: ControlType.NONE }),
-  setControlTypeIngestion: (m: M) => Object.assign(getXR(m), { controlType: ControlType.INGESTION }),
-  setControlTypeExtraction: (m: M) => Object.assign(getXR(m), { controlType: ControlType.EXTRACTION }),
   setContentText: (m: M, content: string) => Object.assign(getXS(m), { contentType: 'text', content }),
   setContentEquation: (m: M, content: string) => Object.assign(getXS(m), { contentType: 'equation', content }),
   setLineWidth: (m: M, lineWidth: number) => getAXS(m).forEach(si => Object.assign(si, { lineWidth })),

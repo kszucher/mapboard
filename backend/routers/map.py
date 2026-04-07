@@ -6,9 +6,8 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user
 from ..database import get_db
-from ..models import Map, Share, User
+from ..models import Map, Workspace
 from ..schemas import (
     CreateMapInMapBody,
     DuplicateMapBody,
@@ -30,14 +29,7 @@ def _default_map_data() -> dict[str, dict]:
     s_id = str(uuid.uuid4())
     return {
         g_id: {"path": ["g"]},
-        r_id: {
-            "path": ["r", 0],
-            "offsetW": 10,
-            "offsetH": 10,
-            "selected": 1,
-            "controlType": "",
-            "note": "",
-        },
+        r_id: {"path": ["r", 0], "offsetW": 10, "offsetH": 10, "selected": 1, "controlType": "", "note": ""},
         s_id: {
             "path": ["r", 0, "s", 0],
             "contentType": "text",
@@ -55,81 +47,46 @@ def _default_map_data() -> dict[str, dict]:
     }
 
 
+def _workspace(db: Session) -> Workspace:
+    workspace = db.get(Workspace, 1)
+    if workspace is None:
+      workspace = Workspace(id=1)
+      db.add(workspace)
+      db.commit()
+      db.refresh(workspace)
+    return workspace
+
+
+def _maps(db: Session) -> list[Map]:
+    return db.query(Map).order_by(Map.tab_order, Map.name).all()
+
+
 def _reorder(maps: list[Map]) -> None:
     for index, item in enumerate(maps):
         item.tab_order = index
 
 
-def _accepted_share_for_map(user: User, map_id: str, db: Session) -> Share | None:
-    return (
-        db.query(Share)
-        .filter(
-            Share.map_id == map_id,
-            Share.share_user_email == user.email,
-            Share.status == "accepted",
-        )
-        .first()
-    )
-
-
-def _can_access_map(user: User, map_id: str, db: Session) -> tuple[Map, str, bool]:
-    map_obj = db.get(Map, map_id)
-    if map_obj is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
-    if map_obj.owner_id == user.id:
-        return map_obj, "edit", False
-
-    share = _accepted_share_for_map(user, map_id, db)
-    if share is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
-    return map_obj, share.access, True
-
-
-def _owned_maps(user: User, db: Session) -> list[Map]:
-    return db.query(Map).filter(Map.owner_id == user.id).order_by(Map.tab_order, Map.name).all()
-
-
-def _shared_maps(user: User, db: Session) -> list[Map]:
-    return (
-        db.query(Map)
-        .join(Share, Share.map_id == Map.id)
-        .filter(Share.share_user_email == user.email, Share.status == "accepted")
-        .order_by(Map.name)
-        .all()
-    )
-
-
-def _ensure_default_owned_map(user: User, db: Session) -> Map:
-    existing = _owned_maps(user, db)
-    if existing:
-        return existing[0]
-
-    new_map = Map(
-        owner_id=user.id,
-        name="Untitled",
-        map_data=_default_map_data(),
-        tab_order=0,
-    )
-    db.add(new_map)
-    db.flush()
-    user.active_map_id = new_map.id
+def _ensure_default_map(db: Session) -> Map:
+    maps = _maps(db)
+    if maps:
+        return maps[0]
+    map_obj = Map(name="Untitled", map_data=_default_map_data(), tab_order=0)
+    db.add(map_obj)
     db.commit()
-    db.refresh(new_map)
-    return new_map
+    db.refresh(map_obj)
+    return map_obj
 
 
-def _resolve_active_map(user: User, db: Session) -> tuple[Map, str, bool]:
-    if user.active_map_id:
-        try:
-            return _can_access_map(user, user.active_map_id, db)
-        except HTTPException:
-            user.active_map_id = None
-            db.commit()
-
-    first_owned = _ensure_default_owned_map(user, db)
-    user.active_map_id = first_owned.id
+def _active_map(db: Session) -> tuple[Workspace, Map]:
+    workspace = _workspace(db)
+    if workspace.active_map_id:
+        active = db.get(Map, workspace.active_map_id)
+        if active is not None:
+            return workspace, active
+    active = _ensure_default_map(db)
+    workspace.active_map_id = active.id
     db.commit()
-    return first_owned, "edit", False
+    return workspace, active
 
 
 def _merge_map_data(current: dict | None, delta: dict | None) -> dict:
@@ -161,28 +118,18 @@ def _breadcrumb_chain(map_obj: Map, db: Session) -> list[Map]:
     return chain
 
 
-def _open_workspace_payload(user: User, db: Session) -> OpenWorkspaceResponse:
-    active_map, access, is_shared = _resolve_active_map(user, db)
-    owned_maps = _owned_maps(user, db)
-    shared_maps = _shared_maps(user, db)
-    breadcrumb_maps = _breadcrumb_chain(active_map, db)
-    tab_ids = [item.id for item in owned_maps]
-    tab_names = [item.name for item in owned_maps]
-    shared_ids = [item.id for item in shared_maps]
-    shared_names = [item.name for item in shared_maps]
-    tab_id = next((index for index, item in enumerate(owned_maps) if item.id == active_map.id), 0)
+@router.post("/open-workspace", response_model=OpenWorkspaceResponse)
+def open_workspace(db: Session = Depends(get_db)):
+    workspace, active_map = _active_map(db)
+    maps = _maps(db)
+    breadcrumbs = _breadcrumb_chain(active_map, db)
     return OpenWorkspaceResponse(
-        userName=user.name or user.email,
-        colorMode=user.color_mode,
-        isShared=is_shared,
-        access=access,
-        tabMapIdList=tab_ids,
-        tabMapNameList=tab_names,
-        tabId=tab_id,
-        sharedMapIdList=shared_ids,
-        sharedMapNameList=shared_names,
-        breadcrumbMapIdList=[item.id for item in breadcrumb_maps],
-        breadcrumbMapNameList=[item.name for item in breadcrumb_maps],
+        colorMode=workspace.color_mode,
+        tabMapIdList=[item.id for item in maps],
+        tabMapNameList=[item.name for item in maps],
+        tabId=next((index for index, item in enumerate(maps) if item.id == active_map.id), 0),
+        breadcrumbMapIdList=[item.id for item in breadcrumbs],
+        breadcrumbMapNameList=[item.name for item in breadcrumbs],
         mapId=active_map.id,
         mapName=active_map.name,
         mapData=active_map.map_data or _default_map_data(),
@@ -190,132 +137,93 @@ def _open_workspace_payload(user: User, db: Session) -> OpenWorkspaceResponse:
     )
 
 
-def _assert_can_edit(user: User, map_obj: Map, db: Session) -> None:
-    if map_obj.owner_id == user.id:
-        return
-    share = _accepted_share_for_map(user, map_obj.id, db)
-    if share and share.access == "edit":
-        return
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Map is read-only")
-
-
-@router.post("/open-workspace", response_model=OpenWorkspaceResponse)
-def open_workspace(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    return _open_workspace_payload(user, db)
-
-
 @router.post("/get-latest-merged", response_model=GetLatestMergedResponse)
-def get_latest_merged(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    active_map, _, _ = _resolve_active_map(user, db)
-    return GetLatestMergedResponse(
-        mapData=active_map.map_data or _default_map_data(),
-        mapMergeId=active_map.last_merge_id,
-    )
+def get_latest_merged(db: Session = Depends(get_db)):
+    _, active_map = _active_map(db)
+    return GetLatestMergedResponse(mapData=active_map.map_data or _default_map_data(), mapMergeId=active_map.last_merge_id)
+
+
+@router.post("/toggle-color-mode", status_code=status.HTTP_204_NO_CONTENT)
+def toggle_color_mode(db: Session = Depends(get_db)):
+    workspace = _workspace(db)
+    workspace.color_mode = "light" if workspace.color_mode == "dark" else "dark"
+    db.commit()
 
 
 @router.post("/select-map", status_code=status.HTTP_204_NO_CONTENT)
-def select_map(
-    body: SelectMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    map_obj, _, _ = _can_access_map(user, body.mapId, db)
-    user.active_map_id = map_obj.id
+def select_map(body: SelectMapBody, db: Session = Depends(get_db)):
+    map_obj = db.get(Map, body.mapId)
+    if map_obj is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
+    workspace = _workspace(db)
+    workspace.active_map_id = map_obj.id
     db.commit()
 
 
 @router.post("/rename-map", status_code=status.HTTP_204_NO_CONTENT)
-def rename_map(
-    body: RenameMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    map_obj, _, _ = _can_access_map(user, body.mapId, db)
-    _assert_can_edit(user, map_obj, db)
+def rename_map(body: RenameMapBody, db: Session = Depends(get_db)):
+    map_obj = db.get(Map, body.mapId)
+    if map_obj is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
     map_obj.name = body.name or "Untitled"
     db.commit()
 
 
 @router.post("/create-map-in-map", status_code=status.HTTP_204_NO_CONTENT)
-def create_map_in_map(
-    body: CreateMapInMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    parent_map, _, _ = _can_access_map(user, body.mapId, db)
-    _assert_can_edit(user, parent_map, db)
-
+def create_map_in_map(body: CreateMapInMapBody, db: Session = Depends(get_db)):
+    parent_map = db.get(Map, body.mapId)
+    if parent_map is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
     child_map = Map(
-        owner_id=user.id,
         name=body.content or "Untitled",
         parent_map_id=parent_map.id,
         parent_node_id=body.nodeId,
         map_data=_default_map_data(),
-        tab_order=len(_owned_maps(user, db)),
+        tab_order=len(_maps(db)),
     )
     db.add(child_map)
     db.flush()
-
     map_data = copy.deepcopy(parent_map.map_data or {})
     if body.nodeId in map_data and isinstance(map_data[body.nodeId], dict):
         map_data[body.nodeId]["linkType"] = "internal"
         map_data[body.nodeId]["link"] = child_map.id
         parent_map.map_data = map_data
         parent_map.last_merge_id = str(uuid.uuid4())
-
-    user.active_map_id = child_map.id
+    workspace = _workspace(db)
+    workspace.active_map_id = child_map.id
     db.commit()
 
 
 @router.post("/create-map-in-tab", status_code=status.HTTP_204_NO_CONTENT)
-def create_map_in_tab(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    new_map = Map(
-        owner_id=user.id,
-        name="Untitled",
-        tab_order=len(_owned_maps(user, db)),
-        map_data=_default_map_data(),
-    )
-    db.add(new_map)
+def create_map_in_tab(db: Session = Depends(get_db)):
+    map_obj = Map(name="Untitled", tab_order=len(_maps(db)), map_data=_default_map_data())
+    db.add(map_obj)
     db.flush()
-    user.active_map_id = new_map.id
+    workspace = _workspace(db)
+    workspace.active_map_id = map_obj.id
     db.commit()
 
 
 @router.post("/create-map-in-tab-duplicate", status_code=status.HTTP_204_NO_CONTENT)
-def create_map_in_tab_duplicate(
-    body: DuplicateMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    source_map, _, _ = _can_access_map(user, body.mapId, db)
+def create_map_in_tab_duplicate(body: DuplicateMapBody, db: Session = Depends(get_db)):
+    source_map = db.get(Map, body.mapId)
+    if source_map is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
     duplicate = Map(
-        owner_id=user.id,
         name=f"{source_map.name} (copy)",
-        tab_order=len(_owned_maps(user, db)),
+        tab_order=len(_maps(db)),
         map_data=copy.deepcopy(source_map.map_data or _default_map_data()),
     )
     db.add(duplicate)
     db.flush()
-    user.active_map_id = duplicate.id
+    workspace = _workspace(db)
+    workspace.active_map_id = duplicate.id
     db.commit()
 
 
 @router.post("/move-up-map-in-tab", status_code=status.HTTP_204_NO_CONTENT)
-def move_up_map_in_tab(
-    body: MoveMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    maps = _owned_maps(user, db)
+def move_up_map_in_tab(body: MoveMapBody, db: Session = Depends(get_db)):
+    maps = _maps(db)
     index = next((idx for idx, item in enumerate(maps) if item.id == body.mapId), None)
     if index is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
@@ -326,12 +234,8 @@ def move_up_map_in_tab(
 
 
 @router.post("/move-down-map-in-tab", status_code=status.HTTP_204_NO_CONTENT)
-def move_down_map_in_tab(
-    body: MoveMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    maps = _owned_maps(user, db)
+def move_down_map_in_tab(body: MoveMapBody, db: Session = Depends(get_db)):
+    maps = _maps(db)
     index = next((idx for idx, item in enumerate(maps) if item.id == body.mapId), None)
     if index is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
@@ -342,32 +246,24 @@ def move_down_map_in_tab(
 
 
 @router.post("/save-map", status_code=status.HTTP_204_NO_CONTENT)
-def save_map(
-    body: SaveMapBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    map_obj, _, _ = _can_access_map(user, body.mapId, db)
-    _assert_can_edit(user, map_obj, db)
+def save_map(body: SaveMapBody, db: Session = Depends(get_db)):
+    map_obj = db.get(Map, body.mapId)
+    if map_obj is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
     map_obj.map_data = _merge_map_data(map_obj.map_data, body.mapDelta)
     map_obj.last_merge_id = str(uuid.uuid4())
     db.commit()
 
 
 @router.post("/delete-map", status_code=status.HTTP_204_NO_CONTENT)
-def delete_map(
-    body: MapIdBody,
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
+def delete_map(body: MapIdBody, db: Session = Depends(get_db)):
     map_obj = db.get(Map, body.mapId)
-    if map_obj is None or map_obj.owner_id != user.id:
+    if map_obj is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Map not found")
-
     for child in db.query(Map).filter(Map.parent_map_id == map_obj.id).all():
         child.parent_map_id = None
-
-    if user.active_map_id == map_obj.id:
-        user.active_map_id = None
+    workspace = _workspace(db)
+    if workspace.active_map_id == map_obj.id:
+        workspace.active_map_id = None
     db.delete(map_obj)
     db.commit()

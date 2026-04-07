@@ -43,8 +43,6 @@ export const NodeActions = () => {
             <DropdownMenu.SubTrigger>{'Edit'}</DropdownMenu.SubTrigger>
             <DropdownMenu.SubContent>
               {getXR(m).controlType !== ControlType.NONE && <DropdownMenu.Item onClick={() => dispatch(actions.setControlTypeNone())}>{'Control Type None'}</DropdownMenu.Item>}
-              {getXR(m).controlType !== ControlType.INGESTION && <DropdownMenu.Item onClick={() => dispatch(actions.setControlTypeIngestion())}>{'Control Type Ingestion'}</DropdownMenu.Item>}
-              {getXR(m).controlType !== ControlType.EXTRACTION && <DropdownMenu.Item onClick={() => dispatch(actions.setControlTypeExtraction())}>{'Control Type Extraction'}</DropdownMenu.Item>}
             </DropdownMenu.SubContent>
           </DropdownMenu.Sub>
         </DropdownMenu.Content>

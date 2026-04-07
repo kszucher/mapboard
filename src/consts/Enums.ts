@@ -1,24 +1,9 @@
-export enum PageState {
-  AUTH,
-  WS,
-}
-
 export enum DialogState {
   NONE,
-  SHARED_BY_ME,
-  SHARED_WITH_ME,
   EDIT_CONTENT_EQUATION,
   CREATE_TABLE_O,
   CREATE_MAP_IN_MAP,
-  SHARE_THIS_MAP,
   RENAME_MAP,
-  ROOT_INGESTION,
-  ROOT_EXTRACTION
-}
-
-export enum AlertDialogState {
-  NONE,
-  DELETE_ACCOUNT
 }
 
 export enum NodeMode {
@@ -40,12 +25,6 @@ export enum LeftMouseMode {
 export enum MidMouseMode {
   SCROLL = 'scroll',
   ZOOM = 'zoom'
-}
-
-export enum AccessType {
-  UNAUTHORIZED = 'unauthorized',
-  VIEW = 'view',
-  EDIT = 'edit'
 }
 
 export enum FormatMode {
@@ -86,13 +65,6 @@ export enum Side {
 
 export enum ControlType {
   NONE = '',
-  INGESTION = 'ingestion',
-  EXTRACTION = 'extraction',
-}
-
-export enum SubProcessType {
-  INGESTION = 'ingestion',
-  EXTRACTION = 'extraction'
 }
 
 export enum Flow {

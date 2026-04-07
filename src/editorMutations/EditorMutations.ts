@@ -3,12 +3,10 @@ import React from "react"
 import {api} from "../api/Api.ts"
 import {getMapX, getMapY} from "../componentsMap/MapDivUtils.ts"
 import {
-  AlertDialogState,
   DialogState,
   FormatMode,
   LeftMouseMode,
   MidMouseMode,
-  PageState,
   Side
 } from "../consts/Enums.ts"
 import {editorState, editorStateDefault} from "../editorState/EditorState.ts"
@@ -24,9 +22,6 @@ export const editorSlice = createSlice({
   name: 'editor',
   initialState: editorState,
   reducers: {
-    setToken(state, action: PayloadAction<string>) {
-      state.token = action.payload
-    },
     resetState() {
       return JSON.parse(editorStateDefault)
     },
@@ -38,9 +33,6 @@ export const editorSlice = createSlice({
     },
     setDialogState(state, action: PayloadAction<DialogState>) {
       state.dialogState = action.payload
-    },
-    setAlertDialogState(state, action: PayloadAction<AlertDialogState>) {
-      state.alertDialogState = action.payload
     },
     setFormatMode(state, action: PayloadAction<FormatMode>) {
       state.formatMode = action.payload
@@ -181,27 +173,15 @@ export const editorSlice = createSlice({
         api.endpoints.moveUpMapInTab.matchPending,
         api.endpoints.moveDownMapInTab.matchPending,
         api.endpoints.deleteMap.matchPending,
-        api.endpoints.updateShareStatusAccepted.matchPending,
-        api.endpoints.withdrawShare.matchPending,
-        api.endpoints.rejectShare.matchPending,
-        api.endpoints.deleteAccount.matchPending,
       ),
       (state) => {
         state.isLoading = true
       }
     )
     builder.addMatcher(
-      api.endpoints.signIn.matchFulfilled,
-      (state, { payload }) => {
-        state.pageState = PageState.WS
-        state.connectionId = payload.connectionId
-      }
-    )
-    builder.addMatcher(
       api.endpoints.openWorkspace.matchFulfilled,
       (state, { payload }) => {
-        console.log(payload)
-        const isValid = Object.values(payload.mapData).every(obj => Object.keys(obj).includes('path'))
+        const isValid = Object.values(payload.mapData as Record<string, Record<string, unknown>>).every(obj => Object.keys(obj).includes('path'))
         if (isValid) {
           const data = mapObjectToArray(payload.mapData)
           const m = structuredClone(data)
@@ -220,12 +200,10 @@ export const editorSlice = createSlice({
     builder.addMatcher(
       api.endpoints.getLatestMerged.matchFulfilled,
       (state, { payload }) => {
-        console.log(payload)
-        const isValid = Object.values(payload.mapData).every(obj => Object.keys(obj).includes('path'))
+        const isValid = Object.values(payload.mapData as Record<string, Record<string, unknown>>).every(obj => Object.keys(obj).includes('path'))
         if (isValid) {
           const data = mapObjectToArray(payload.mapData)
           state.latestMapData = structuredClone(data)
-          console.log('new base map loaded')
         } else {
           window.alert('invalid getLatestMerged map')
         }

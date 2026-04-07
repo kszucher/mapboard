@@ -1,4 +1,4 @@
-import {AlertDialog, Dialog, Spinner, Theme} from "@radix-ui/themes"
+import {Dialog, Spinner, Theme} from "@radix-ui/themes"
 import {FC, useEffect} from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {useOpenWorkspaceQuery} from "../api/Api.ts"
@@ -11,13 +11,7 @@ import {NodeActionsEditContentEquation} from "../componentsMapActions/NodeAction
 import {NodeActionsEditCreateSubMap} from "../componentsMapActions/NodeActionsEditCreateSubMap.tsx"
 import {NodeActionsEditFormatter} from "../componentsMapActions/NodeActionsEditFormatter.tsx"
 import {NodeActionsInsertTable} from "../componentsMapActions/NodeActionsInsertTable.tsx"
-import {RootExtraction} from "../componentsMapActions/RootExtraction.tsx"
-import {RootIngestion} from "../componentsMapActions/RootIngestion.tsx"
-import {Share} from "../componentsShareActions/Share.tsx"
-import {SharedByMe} from "../componentsShareActions/SharedByMe.tsx"
-import {SharedWithMe} from "../componentsShareActions/SharedWithMe.tsx"
-import {UserAccountDelete} from "../componentsUserActions/UserAccountDelete.tsx"
-import {AlertDialogState, DialogState} from "../consts/Enums.ts"
+import {DialogState} from "../consts/Enums.ts"
 import {actions} from "../editorMutations/EditorMutations.ts"
 import {mSelector} from "../editorQueries/EditorQueries.ts"
 import {EditorAppBarLeft} from "./EditorAppBarLeft.tsx"
@@ -33,7 +27,6 @@ export const Editor: FC = () => {
   const { data } = useOpenWorkspaceQuery()
   const { colorMode } = data || defaultUseOpenWorkspaceQueryState
   const dialogState = useSelector((state: RootState) => state.editor.dialogState)
-  const alertDialogState = useSelector((state: RootState) => state.editor.alertDialogState)
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(()=> {
@@ -45,26 +38,18 @@ export const Editor: FC = () => {
     <Theme appearance={colorMode === 'dark' ? 'dark' : 'light'} accentColor="violet" panelBackground="solid" scaling="100%" radius="full">
       {mExists &&
         <Dialog.Root onOpenChange={(isOpen) => !isOpen && dispatch(actions.setDialogState(DialogState.NONE))}>
-          <AlertDialog.Root onOpenChange={(isOpen) => !isOpen && dispatch(actions.setAlertDialogState(AlertDialogState.NONE))}>
-            <Map/>
-            <div className="dark:bg-zinc-800 bg-zinc-50 dark:border-neutral-700 fixed top-0 left-0 w-screen h-[40px] z-50">
-              <EditorAppBarLeft/>
-              <EditorAppBarMid/>
-              <EditorAppBarRight/>
-            </div>
-            {formatterVisible && <NodeActionsEditFormatter/>}
-            <Window/>
-            {alertDialogState === AlertDialogState.DELETE_ACCOUNT && <UserAccountDelete/>}
-          </AlertDialog.Root>
+          <Map/>
+          <div className="dark:bg-zinc-800 bg-zinc-50 dark:border-neutral-700 fixed top-0 left-0 w-screen h-[40px] z-50">
+            <EditorAppBarLeft/>
+            <EditorAppBarMid/>
+            <EditorAppBarRight/>
+          </div>
+          {formatterVisible && <NodeActionsEditFormatter/>}
+          <Window/>
           {dialogState === DialogState.RENAME_MAP && <MapActionsRename/>}
-          {dialogState === DialogState.SHARE_THIS_MAP && <Share/>}
-          {dialogState === DialogState.SHARED_BY_ME && <SharedByMe/>}
-          {dialogState === DialogState.SHARED_WITH_ME && <SharedWithMe/>}
           {dialogState === DialogState.CREATE_MAP_IN_MAP && <NodeActionsEditCreateSubMap/>}
           {dialogState === DialogState.EDIT_CONTENT_EQUATION && <NodeActionsEditContentEquation/>}
           {dialogState === DialogState.CREATE_TABLE_O && <NodeActionsInsertTable/>}
-          {dialogState === DialogState.ROOT_INGESTION && <RootIngestion/>}
-          {dialogState === DialogState.ROOT_EXTRACTION && <RootExtraction/>}
         </Dialog.Root>
       }
       <div
@@ -77,7 +62,7 @@ export const Editor: FC = () => {
           transition: 'opacity 0.3s ease-in',
           pointerEvents: 'none'
         }}
-        className="fixed top-0 left-0 w-screen h-screen bg-zinc-900  flex items-center justify-center z-50"
+        className="fixed top-0 left-0 w-screen h-screen bg-zinc-900 flex items-center justify-center z-50"
       >
         <Spinner size="3"/>
       </div>

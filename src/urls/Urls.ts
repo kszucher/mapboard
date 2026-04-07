@@ -5,7 +5,3 @@ export const nodeBackendUrl = process.env.NODE_ENV === 'development'
 export const pythonBackendUrl = process.env.NODE_ENV === 'development'
   ? 'http://127.0.0.1:8083'
   : 'https://mapboard-llm-server.onrender.com'
-
-export const authAudienceUrl = process.env.NODE_ENV === 'development'
-  ? 'http://local.mapboard/'
-  : 'https://mapboard.io/'
